@@ -1,0 +1,5 @@
+<button type="button" class="ngx-searchix-trigger" (click)="open()">
+  <ng-template [ngIf]="iconTemplate" [ngTemplateOutlet]="iconTemplate"></ng-template>
+  <span class="label">Search</span>
+  <span class="hint">{{ (hotkey || defaultConfig?.hotkey || 'Ctrl+K') }}</span>
+</button>

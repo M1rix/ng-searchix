@@ -1,0 +1,32 @@
+@import "../../../node_modules/@angular/cdk/overlay-prebuilt.css";
+
+/* ===== CDK Overlay base ===== */
+.cdk-overlay-container,
+.cdk-global-overlay-wrapper {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--searchix-z, 10000);
+}
+
+.cdk-overlay-pane {
+    position: absolute;
+    pointer-events: auto;
+}
+
+/* ===== Overlay classes used by ng-searchix ===== */
+.ngx-searchix-backdrop {
+    background: var(--searchix-backdrop, rgba(0, 0, 0, 0.12));
+    backdrop-filter: blur(var(--searchix-backdrop-blur, 8px));
+}
+
+.ngx-searchix-panel {
+    width: var(--searchix-width, auto);
+    border-radius: var(--searchix-radius, 12px);
+    box-shadow: var(--searchix-shadow, 0 24px 80px rgba(0, 0, 0, 0.25));
+    overflow: hidden;
+}
+
+.ngx-searchix-panel ngx-searchix-dialog {
+    width: 100%;
+}
