@@ -18,6 +18,9 @@ export class SearchixComponent {
   @Input() showMs?: boolean;
   @Input() maxResults?: number;
   @Input() iconTemplate?: TemplateRef<any> | null = null;
+  @Input() iconRenderer?: TemplateRef<any>;
+  @Input() buttonTemplate?: TemplateRef<any>;
+  @Input() emitOnExternalOpen?: boolean;
 
   @Output() itemSelected = new EventEmitter<SearchItem>();
   @Output() opened = new EventEmitter<void>();
@@ -38,6 +41,8 @@ export class SearchixComponent {
       hotkey: this.hotkey ?? this.defaultConfig?.hotkey,
       closeOnSelect: this.closeOnSelect ?? this.defaultConfig?.closeOnSelect,
       maxResults: this.maxResults ?? this.defaultConfig?.maxResults,
+      iconRenderer: this.iconRenderer ?? this.defaultConfig?.iconRenderer,
+      emitOnExternalOpen: this.emitOnExternalOpen ?? this.defaultConfig?.emitOnExternalOpen,
     };
 
     this.opened.emit();

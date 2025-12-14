@@ -1,6 +1,9 @@
 <div class="searchix" role="dialog" aria-modal="true">
     <div class="searchix__header">
-        <span class="searchix__icon">🔍</span>
+        <svg class="searchix__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+        </svg>
 
         <input
                 class="searchix__input"
@@ -9,11 +12,17 @@
                 autofocus
         />
 
-        <span class="searchix__kbd">esc</span>
+        <kbd class="searchix__kbd">esc</kbd>
     </div>
 
     <div class="searchix__content" *ngIf="!results.length; else list">
-        <div class="searchix__empty">No recent searches</div>
+        <div class="searchix__empty">
+            <svg class="searchix__empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <p>No results found</p>
+        </div>
     </div>
 
     <ng-template #list>
@@ -25,16 +34,60 @@
                     (click)="select(it)"
                     [class.active]="i === activeIndex"
             >
-                <div class="title">{{ it.title }}</div>
-                <div class="subtitle" *ngIf="it.subtitle">{{ it.subtitle }}</div>
+                <div class="searchix__item-content">
+                    <div class="searchix__item-icon" *ngIf="it.icon">
+                        <ng-container *ngIf="data.config.iconRenderer; else defaultIcon">
+                            <ng-container *ngTemplateOutlet="data.config.iconRenderer; context: { $implicit: it.icon }"></ng-container>
+                        </ng-container>
+                        <ng-template #defaultIcon>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </ng-template>
+                    </div>
+
+                    <div class="searchix__item-text">
+                        <div class="searchix__item-title">{{ it.title }}</div>
+                        <div class="searchix__item-subtitle" *ngIf="it.subtitle">{{ it.subtitle }}</div>
+                    </div>
+                </div>
+
+                <a
+                    *ngIf="it.href"
+                    class="searchix__item-external"
+                    [href]="it.href"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    (click)="openExternal($event, it)"
+                    title="Open in new tab"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
             </button>
         </div>
     </ng-template>
 
     <div class="searchix__footer">
-        Found <strong>{{ results.length }}</strong> results
-        <ng-container *ngIf="data.config.showMs">
-            &nbsp;• {{ searchMs }} ms
-        </ng-container>
+        <div class="searchix__footer-info">
+            <span class="searchix__footer-count">{{ results.length }} {{ results.length === 1 ? 'result' : 'results' }}</span>
+            <span *ngIf="data.config.showMs" class="searchix__footer-time">{{ searchMs }}ms</span>
+        </div>
+        <div class="searchix__footer-hints">
+            <kbd class="searchix__footer-kbd">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+                navigate
+            </kbd>
+            <kbd class="searchix__footer-kbd">↵ select</kbd>
+        </div>
     </div>
 </div>

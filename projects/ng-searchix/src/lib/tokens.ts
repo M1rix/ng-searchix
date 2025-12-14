@@ -1,4 +1,4 @@
-import { InjectionToken } from '@angular/core';
+import { InjectionToken, TemplateRef } from '@angular/core';
 import { SearchItem } from './models';
 
 export interface SearchixConfig {
@@ -10,6 +10,10 @@ export interface SearchixConfig {
   // Optional initial items provider hook (host can still pass items directly)
   // Keeping it sync to stay Angular-12 friendly; you can extend later.
   filterFn?: (q: string, items: SearchItem[]) => SearchItem[];
+  // Icon renderer: receives icon key and returns template
+  iconRenderer?: TemplateRef<any>;
+  // Emit selection event when opening in external link
+  emitOnExternalOpen?: boolean;
 }
 
 export const SEARCHIX_CONFIG = new InjectionToken<SearchixConfig>('SEARCHIX_CONFIG');

@@ -1,8 +1,100 @@
-# ng-searchix-workspace
+# ng-searchix
 
-This zip contains a ready Angular **library workspace** (Angular CLI 12.x baseline) that builds the `ng-searchix` library.
+A beautiful, customizable search component for Angular with keyboard navigation, icon support, and external link integration.
 
-## Quick start
+## Features
+
+- 🎨 **Beautiful default UI** with modern, clean design
+- 🎨 **Fully customizable** with 60+ CSS custom properties
+- 🔧 **Custom button template** support
+- 🎯 **Icon library integration** (Lucide, Heroicons, Font Awesome, or custom)
+- 🔗 **External link support** with dedicated icon
+- ⌨️ **Keyboard navigation** (↑/↓ arrows, Enter, Esc)
+- 🚀 **Lightweight** with minimal dependencies
+- ♿ **Accessible** with ARIA attributes
+- 📱 **Responsive** design
+
+## Quick Start
+
+### Installation
+
+```bash
+npm install ng-searchix
+```
+
+### Import Module
+
+```typescript
+import { NgModule } from '@angular/core';
+import { SearchixModule } from 'ng-searchix';
+
+@NgModule({
+  imports: [SearchixModule]
+})
+export class AppModule {}
+```
+
+### Import Styles
+
+Add to your `angular.json`:
+
+```json
+"styles": [
+  "node_modules/ng-searchix/styles/searchix.css",
+  "src/styles.css"
+]
+```
+
+### Basic Usage
+
+```typescript
+import { Component } from '@angular/core';
+import { SearchItem } from 'ng-searchix';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <ngx-searchix
+      [items]="searchItems"
+      [placeholder]="'Search...'"
+      [hotkey]="'ctrl+k'"
+      (itemSelected)="onItemSelected($event)"
+    ></ngx-searchix>
+  `
+})
+export class AppComponent {
+  searchItems: SearchItem[] = [
+    {
+      id: '1',
+      title: 'Getting Started',
+      subtitle: 'Learn the basics',
+      icon: 'book',
+      href: 'https://example.com/docs'
+    },
+    {
+      id: '2',
+      title: 'API Reference',
+      subtitle: 'Complete documentation',
+      icon: 'code',
+      href: 'https://example.com/api'
+    }
+  ];
+
+  onItemSelected(item: SearchItem) {
+    console.log('Selected:', item);
+  }
+}
+```
+
+## Documentation
+
+- 📖 [Usage Guide](./projects/ng-searchix/USAGE.md) - Complete usage documentation
+- 🎨 [Theme Examples](./projects/ng-searchix/THEMES.md) - Ready-to-use themes
+- 💡 [Examples](./projects/ng-searchix/EXAMPLES.md) - Practical code examples
+
+## Development
+
+### Build the Library
 
 ```bash
 npm install
@@ -11,8 +103,84 @@ npm run build
 
 The built library output will be in `dist/ng-searchix`.
 
-## Notes
+### Run Tests
 
-- The library uses **Angular CDK Overlay** to render an internal modal/dialog.
-- Public API is event-driven: the library emits `itemSelected` to the host app instead of routing internally.
-- Peer dependency range in the library package is `>=12 <19` (you can widen/narrow as needed).
+```bash
+npm test
+```
+
+## Key Features
+
+### Custom Button Template
+
+```html
+<ngx-searchix
+  [items]="items"
+  [buttonTemplate]="customButton"
+></ngx-searchix>
+
+<ng-template #customButton let-context>
+  <button (click)="context.open()">
+    Custom Search Button
+  </button>
+</ng-template>
+```
+
+### Icon Integration
+
+```html
+<ngx-searchix
+  [items]="items"
+  [iconRenderer]="iconRenderer"
+></ngx-searchix>
+
+<ng-template #iconRenderer let-iconName>
+  <lucide-icon [name]="iconName"></lucide-icon>
+</ng-template>
+```
+
+### CSS Customization
+
+```css
+:root {
+  --searchix-bg: #ffffff;
+  --searchix-fg: #111827;
+  --searchix-radius: 12px;
+  --searchix-width: 640px;
+  /* ... 60+ more variables */
+}
+```
+
+### External Links
+
+Items with `href` automatically show an external link icon:
+
+```typescript
+{
+  id: '1',
+  title: 'Documentation',
+  href: 'https://example.com', // External link icon appears
+  icon: 'book'
+}
+```
+
+## Browser Support
+
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+
+## Technical Notes
+
+- Uses **Angular CDK Overlay** for modal rendering
+- Event-driven API - emits `itemSelected` instead of routing internally
+- Peer dependency: Angular `>=12 <19`
+- Compatible with Angular 12-18
+
+## License
+
+MIT
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

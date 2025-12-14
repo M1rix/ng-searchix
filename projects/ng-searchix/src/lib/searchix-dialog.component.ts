@@ -52,6 +52,15 @@ export class SearchixDialogComponent {
         this.data.selection$.complete();
     }
 
+    openExternal(event: Event, item: SearchItem): void {
+        event.stopPropagation();
+        // Link will open naturally via href
+        // Optionally emit selection event
+        if (this.data.config.emitOnExternalOpen) {
+            this.data.selection$.next(item);
+        }
+    }
+
     @HostListener('document:keydown', ['$event'])
     onKeydown(e: KeyboardEvent): void {
         // Only handle keys while dialog is open.
