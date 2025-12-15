@@ -36,7 +36,8 @@
       closeOnSelect: true,
       showMs: false,
       maxResults: 50,
-      emitOnExternalOpen: false
+      emitOnExternalOpen: false,
+      autoNavigate: true  // Automatically navigate to href on select
     };
 
     this.setDefaults = function(config) {
@@ -84,7 +85,7 @@
             'ng-change="$ctrl.onQueryChange()" ' +
             'ng-keydown="$ctrl.onKeydown($event)" ' +
             'autofocus />' +
-          '<kbd class="searchix__kbd">esc</kbd>' +
+          '<code class="searchix__kbd">esc</code>' +
         '</div>' +
 
         '<div class="searchix__content" ng-if="!$ctrl.results.length">' +

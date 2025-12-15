@@ -11,7 +11,10 @@
     return {
       restrict: 'A',
       templateUrl: 'ngx-searchix/dialog.html',
-      scope: false
+      scope: true,  // Create isolate scope to inherit from parent
+      controller: 'SearchixDialogController',
+      controllerAs: '$ctrl',
+      bindToController: false  // Don't bind to controller, use scope inheritance
     };
   }
 

@@ -40,8 +40,8 @@
       overlayScope.onSelect = onSelect;
       overlayScope.onClose = onClose;
 
-      // Create dialog controller
-      createDialogController(overlayScope);
+      // Debug logging
+      console.log('[searchix-overlay] Opening with items:', overlayScope.items.length, 'items');
 
       // Create backdrop
       backdropElement = angular.element('<div class="ngx-searchix-backdrop"></div>');
@@ -56,7 +56,6 @@
 
       // Create dialog
       overlayElement = angular.element('<div ngx-searchix-dialog></div>');
-      overlayElement.attr('ng-controller', 'SearchixDialogController as $ctrl');
 
       // Compile dialog
       $compile(overlayElement)(overlayScope);
@@ -130,10 +129,6 @@
       }
     }
 
-    function createDialogController(scope) {
-      // Create controller on scope
-      scope.SearchixDialogController = SearchixDialogController;
-    }
   }
 
   /**
@@ -188,9 +183,31 @@
     }
 
     function select(item) {
+      // Default navigation behavior if href exists and autoNavigate is enabled
+      if (item.href && $ctrl.config.autoNavigate !== false) {
+        var href = item.href;
+        var hasProtocol = /^[a-z][a-z0-9+.-]*:/i.test(href);
+
+        if (hasProtocol) {
+          // External link - open in new tab
+          console.log('[searchix] Opening external link:', href);
+          window.open(href, '_target', 'noopener,noreferrer');
+        } else {
+          // Internal route - navigate using window.location
+          // For AngularJS apps with hash routing, this will work with routes like "/dashboard" or "#/dashboard"
+          if (href.charAt(0) !== '#' && href.charAt(0) !== '/') {
+            href = '#/' + href;
+          }
+          console.log('[searchix] Navigating to internal route:', href);
+          window.location.href = href;
+        }
+      }
+
+      // Call user callback
       if ($scope.onSelect) {
         $scope.onSelect(item);
       }
+
       if ($ctrl.config.closeOnSelect !== false) {
         close();
       }
@@ -198,7 +215,14 @@
 
     function openExternal(event, item) {
       event.stopPropagation();
-      // Link will open naturally via href
+      event.preventDefault();
+
+      // Open external link in new tab
+      if (item.href) {
+        window.open(item.href, '_blank', 'noopener,noreferrer');
+      }
+
+      // Optionally call callback
       if ($ctrl.config.emitOnExternalOpen && $scope.onSelect) {
         $scope.onSelect(item);
       }
