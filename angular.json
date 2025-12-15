@@ -22,6 +22,32 @@
           }
         }
       }
+    },
+    "ng-searchix-legacy": {
+      "projectType": "library",
+      "root": "projects/ng-searchix-legacy",
+      "sourceRoot": "projects/ng-searchix-legacy/src",
+      "prefix": "ngx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ng-searchix-legacy/package.json"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "ng-searchix"

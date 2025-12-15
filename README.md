@@ -1,4 +1,13 @@
-# ng-searchix
+# ng-searchix Workspace
+
+Монорепозиторий с двумя поисковыми библиотеками:
+
+- **ng-searchix** - для Angular 2+ (современные приложения)
+- **ng-searchix-legacy** - для AngularJS 1.5.8+ (legacy приложения)
+
+---
+
+## ng-searchix (Angular 2+)
 
 A beautiful, customizable search component for Angular with keyboard navigation, icon support, and external link integration.
 
@@ -92,16 +101,75 @@ export class AppComponent {
 - 🎨 [Theme Examples](./projects/ng-searchix/THEMES.md) - Ready-to-use themes
 - 💡 [Examples](./projects/ng-searchix/EXAMPLES.md) - Practical code examples
 
+---
+
+## ng-searchix-legacy (AngularJS 1.x)
+
+### Особенности
+- ✅ Совместимость с AngularJS 1.5.8+
+- ✅ Тот же API что и в Angular версии
+- ✅ Горячие клавиши (Ctrl+K, Cmd+K)
+- ✅ Навигация стрелками
+- ✅ Полностью настраиваемый
+
+### Быстрый старт
+
+```html
+<!-- Подключение -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+<link rel="stylesheet" href="dist/ng-searchix-legacy.css">
+<script src="dist/ng-searchix-legacy.js"></script>
+```
+
+```javascript
+// Использование
+angular.module('myApp', ['ngSearchixLegacy'])
+  .controller('MainCtrl', function() {
+    var vm = this;
+
+    vm.items = [
+      { id: '1', title: 'Dashboard', subtitle: 'View analytics' },
+      { id: '2', title: 'Settings', subtitle: 'Configure app' }
+    ];
+
+    vm.onSelect = function(item) {
+      console.log('Selected:', item);
+    };
+  });
+```
+
+```html
+<ngx-searchix
+  items="$ctrl.items"
+  on-item-selected="$ctrl.onSelect($item)"
+></ngx-searchix>
+```
+
+**Полная документация**: [projects/ng-searchix-legacy/README.md](./projects/ng-searchix-legacy/README.md)
+**Demo**: [projects/ng-searchix-legacy/example.html](./projects/ng-searchix-legacy/example.html)
+
+---
+
 ## Development
 
-### Build the Library
+### Build Libraries
 
 ```bash
 npm install
+
+# Сборка Angular 2+ версии
 npm run build
+
+# Сборка AngularJS 1.x версии
+npm run build:legacy
+
+# Сборка обеих библиотек
+npm run build:all
 ```
 
-The built library output will be in `dist/ng-searchix`.
+**Output**:
+- `dist/ng-searchix/` - Angular 2+ библиотека
+- `projects/ng-searchix-legacy/dist/` - AngularJS 1.x библиотека
 
 ### Run Tests
 
@@ -180,6 +248,47 @@ Items with `href` automatically show an external link icon:
 ## License
 
 MIT
+
+## Структура проекта
+
+```
+ng-searchix-workspace/
+├── projects/
+│   ├── ng-searchix/              # Angular 2+ библиотека
+│   │   ├── src/
+│   │   └── README.md
+│   │
+│   └── ng-searchix-legacy/       # AngularJS 1.x библиотека
+│       ├── src/
+│       ├── dist/
+│       ├── example.html          # Живое демо
+│       └── README.md
+│
+├── dist/ng-searchix/             # Собранная Angular библиотека
+├── angular.json                  # Workspace конфигурация
+└── package.json                  # NPM скрипты
+```
+
+## NPM Scripts
+
+```bash
+npm run build           # Сборка ng-searchix (Angular 2+)
+npm run build:legacy    # Сборка ng-searchix-legacy (AngularJS 1.x)
+npm run build:all       # Сборка обеих библиотек
+npm test               # Запуск тестов
+npm run lint           # Линтинг
+```
+
+## Сравнение библиотек
+
+| Характеристика | ng-searchix | ng-searchix-legacy |
+|---------------|-------------|-------------------|
+| **Framework** | Angular 12+ | AngularJS 1.5.8+ |
+| **Язык** | TypeScript | JavaScript |
+| **Overlay** | Angular CDK | Custom |
+| **Bindings** | `[items]` | `items` |
+| **Events** | `(itemSelected)` | `on-item-selected` |
+| **Размер** | ~50KB | ~28KB |
 
 ## Contributing
 
