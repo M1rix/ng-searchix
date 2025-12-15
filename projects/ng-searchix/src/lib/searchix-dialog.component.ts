@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, Inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, Inject, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 
@@ -18,7 +18,13 @@ export class SearchixDialogData {
     styleUrls: ['./searchix-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchixDialogComponent {
+export class SearchixDialogComponent implements AfterViewInit {
+    @ViewChild('searchInput', { static: false })
+    searchInput?: HTMLInputElement;
+
+    @ViewChild('searchList', { static: false })
+    searchList?: HTMLInputElement;
+
     q = new FormControl('');
     searchMs = 0;
 
@@ -33,6 +39,10 @@ export class SearchixDialogComponent {
             this.activeIndex = 0;
             this.results = this.filter(val || '');
         });
+    }
+
+    ngAfterViewInit(): void {
+        this.searchInput?.focus();
     }
 
     trackById(_: number, it: SearchItem): string {
@@ -68,9 +78,11 @@ export class SearchixDialogComponent {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             this.activeIndex = Math.min(this.activeIndex + 1, Math.max(0, this.results.length - 1));
+            this.searchList?.children[this.activeIndex].scroll({behavior: 'smooth'});
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             this.activeIndex = Math.max(this.activeIndex - 1, 0);
+            this.searchList?.children[this.activeIndex].scroll({behavior: 'smooth'});
         } else if (e.key === 'Enter') {
             const item = this.results[this.activeIndex];
             if (item) {

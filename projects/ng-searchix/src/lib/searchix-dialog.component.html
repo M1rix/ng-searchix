@@ -6,6 +6,7 @@
         </svg>
 
         <input
+                #searchInput
                 class="searchix__input"
                 [placeholder]="data.config.placeholder || 'Search...'"
                 [formControl]="q"
@@ -26,10 +27,11 @@
     </div>
 
     <ng-template #list>
-        <div class="searchix__list">
+        <div #searchList class="searchix__list">
             <button
                     type="button"
                     class="searchix__item"
+                    id="searchix__item-{{i}}"
                     *ngFor="let it of results; let i = index; trackBy: trackById"
                     (click)="select(it)"
                     [class.active]="i === activeIndex"
