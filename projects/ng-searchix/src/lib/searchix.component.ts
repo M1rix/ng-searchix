@@ -12,7 +12,9 @@ import { SEARCHIX_CONFIG, SearchixConfig } from './tokens';
 })
 export class SearchixComponent {
   @Input() items: SearchItem[] = [];
+  @Input() recentItems?: SearchItem[];
   @Input() placeholder?: string;
+  @Input() label?: string; // 'Search'
   @Input() hotkey?: string; // e.g. 'ctrl+k'
   @Input() closeOnSelect?: boolean;
   @Input() showMs?: boolean;
@@ -37,6 +39,7 @@ export class SearchixComponent {
     const config: SearchixConfig = {
       ...this.defaultConfig,
       showMs: this.showMs ?? this.defaultConfig?.showMs,
+      label: this.label ?? this.defaultConfig?.label,
       placeholder: this.placeholder ?? this.defaultConfig?.placeholder,
       hotkey: this.hotkey ?? this.defaultConfig?.hotkey,
       closeOnSelect: this.closeOnSelect ?? this.defaultConfig?.closeOnSelect,
@@ -48,7 +51,7 @@ export class SearchixComponent {
     this.opened.emit();
 
     this.sub?.unsubscribe();
-    this.sub = this.overlaySvc.open(this.items, config).subscribe({
+    this.sub = this.overlaySvc.open(this.items, config, this.recentItems).subscribe({
       next: (it) => this.itemSelected.emit(it),
       complete: () => {
         this.closed.emit();

@@ -13,7 +13,7 @@
         <path d="m21 21-4.35-4.35"></path>
       </svg>
     </ng-template>
-    <span class="ngx-searchix-label">Search</span>
+    <span class="ngx-searchix-label">{{ (label || 'Lookup') }}</span>
     <code class="ngx-searchix-hint">{{ (hotkey || defaultConfig?.hotkey || 'Ctrl+K') }}</code>
   </button>
 </ng-template>

@@ -3,6 +3,7 @@ import { SearchItem } from './models';
 
 export interface SearchixConfig {
   placeholder?: string;
+  label?: string; // e.g. "ctrl+k" or "cmd+k"
   hotkey?: string; // e.g. "ctrl+k" or "cmd+k"
   closeOnSelect?: boolean;
   showMs?: boolean;
@@ -17,3 +18,4 @@ export interface SearchixConfig {
 }
 
 export const SEARCHIX_CONFIG = new InjectionToken<SearchixConfig>('SEARCHIX_CONFIG');
+export const SEARCHIX_RECENTS_KEY = 'searchix-recents'

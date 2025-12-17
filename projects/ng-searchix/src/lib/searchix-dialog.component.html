@@ -1,49 +1,64 @@
-<div class="searchix" role="dialog" aria-modal="true">
+<div aria-modal="true" class="searchix" role="dialog">
     <div class="searchix__header">
-        <svg class="searchix__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="searchix__icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+             stroke-width="2" viewBox="0 0 24 24" width="20">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.35-4.35"></path>
         </svg>
 
         <input
-                #searchInput
-                id="searchix-input"
-                class="searchix__input"
-                [placeholder]="data.config.placeholder || 'Search...'"
-                [formControl]="q"
-                autofocus
+            #searchInput
+            [formControl]="q"
+            [placeholder]="data.config.placeholder || 'Search...'"
+            autofocus
+            class="searchix__input"
+            id="searchix-input"
         />
 
         <kbd class="searchix__kbd">esc</kbd>
     </div>
 
-    <div class="searchix__content" *ngIf="!results.length; else list">
+    <div *ngIf="!(!q.value || !q.value?.trim() ? recents : results).length; else list" class="searchix__content">
         <div class="searchix__empty">
-            <svg class="searchix__empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="searchix__empty-icon" fill="none" height="48" stroke="currentColor" stroke-linecap="round"
+                 stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="48">
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <p>No results found</p>
+            <p>{{ (!q.value || !q.value?.trim()) ? 'No recent searches' : 'No results found' }}</p>
         </div>
     </div>
 
     <ng-template #list>
         <div #searchList class="searchix__list">
+            <!-- Show "Recent" header if search is empty and recents exist -->
+            <div *ngIf="(!q.value || !q.value?.trim()) && recents.length > 0" class="searchix__recents-header">
+                <svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     viewBox="0 0 24 24" width="16">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Recents</span>
+            </div>
+
             <button
-                    type="button"
+                    (click)="select(it)"
+                    *ngFor="let it of (!q.value?.trim() && recents.length > 0 ? recents : results); let i = index; trackBy: trackById"
+                    [class.active]="i === activeIndex"
                     class="searchix__item"
                     id="searchix__item-{{i}}"
-                    *ngFor="let it of results; let i = index; trackBy: trackById"
-                    (click)="select(it)"
-                    [class.active]="i === activeIndex"
+                    type="button"
             >
                 <div class="searchix__item-content">
-                    <div class="searchix__item-icon" *ngIf="it.icon">
+                    <div *ngIf="it.icon" class="searchix__item-icon">
                         <ng-container *ngIf="data.config.iconRenderer; else defaultIcon">
-                            <ng-container *ngTemplateOutlet="data.config.iconRenderer; context: { $implicit: it.icon }"></ng-container>
+                            <ng-container
+                                    *ngTemplateOutlet="data.config.iconRenderer; context: { $implicit: it.icon }"></ng-container>
                         </ng-container>
                         <ng-template #defaultIcon>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 stroke-width="2" viewBox="0 0 24 24" width="20">
                                 <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
                                 <polyline points="14 2 14 8 20 8"></polyline>
                             </svg>
@@ -52,40 +67,61 @@
 
                     <div class="searchix__item-text">
                         <div class="searchix__item-title">{{ it.title }}</div>
-                        <div class="searchix__item-subtitle" *ngIf="it.subtitle">{{ it.subtitle }}</div>
+                        <div *ngIf="it.subtitle" class="searchix__item-subtitle">{{ it.subtitle }}</div>
                     </div>
                 </div>
 
-                <a
-                    *ngIf="it.href"
-                    class="searchix__item-external"
-                    [href]="it.href"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    (click)="openExternal($event, it)"
-                    title="Open in new tab"
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                </a>
+                <div class="searchix__item-actions">
+                    <!-- Show delete button for recent items when search is empty -->
+                    <button
+                            (click)="removeRecent($event, it)"
+                            *ngIf="(!q.value?.trim() && recents.length > 0) && recents.length > 0"
+                            class="searchix__item-delete"
+                            title="Remove from recents"
+                            type="button"
+                    >
+                        <svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                             stroke-width="2" viewBox="0 0 24 24" width="16">
+                            <line x1="18" x2="6" y1="6" y2="18"></line>
+                            <line x1="6" x2="18" y1="6" y2="18"></line>
+                        </svg>
+                    </button>
+
+                    <!-- Show external link icon -->
+                    <a
+                            (click)="openExternal($event, it)"
+                            *ngIf="it.href"
+                            [href]="it.href"
+                            class="searchix__item-external"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            title="Open in new tab"
+                    >
+                        <svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                             stroke-width="2" viewBox="0 0 24 24" width="16">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" x2="21" y1="14" y2="3"></line>
+                        </svg>
+                    </a>
+                </div>
             </button>
         </div>
     </ng-template>
 
     <div class="searchix__footer">
         <div class="searchix__footer-info">
-            <span class="searchix__footer-count">{{ results.length }} {{ results.length === 1 ? 'result' : 'results' }}</span>
+            <span class="searchix__footer-count">{{ !q.value?.trim() && recents.length > 0 ? recents : results }} {{ (!q.value?.trim() && recents.length > 0 ? recents : results).length === 1 ? 'result' : 'results' }}</span>
             <span *ngIf="data.config.showMs" class="searchix__footer-time">{{ searchMs }}ms</span>
         </div>
         <div class="searchix__footer-hints">
             <kbd class="searchix__footer-kbd">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     viewBox="0 0 24 24" width="12">
                     <polyline points="18 15 12 9 6 15"></polyline>
                 </svg>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     viewBox="0 0 24 24" width="12">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
                 navigate

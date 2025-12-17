@@ -547,70 +547,103 @@ export class CategorySearchComponent {
 }
 ```
 
-## Example 9: Recently Viewed Items
+## Example 9: Recent Items (Built-in Feature) ⭐ NEW
+
+The library now has built-in support for recent items with automatic localStorage management!
+
+### Option 1: Auto localStorage (Recommended)
+
+Simply use the component without `recentItems` - it will automatically load from localStorage:
 
 ```typescript
 import { Component } from '@angular/core';
 import { SearchItem } from 'ng-searchix';
 
 @Component({
-  selector: 'app-recent-search',
+  selector: 'app-auto-recent',
   template: `
     <ngx-searchix
-      [items]="displayItems"
-      [placeholder]="'Search or select recent...'"
+      [items]="items"
+      [placeholder]="'Search...'"
       (itemSelected)="onSelect($event)"
     ></ngx-searchix>
   `
 })
-export class RecentSearchComponent {
-  private allItems: SearchItem[] = [
-    { id: '1', title: 'Page 1', subtitle: 'First page' },
-    { id: '2', title: 'Page 2', subtitle: 'Second page' },
-    { id: '3', title: 'Page 3', subtitle: 'Third page' }
+export class AutoRecentComponent {
+  items: SearchItem[] = [
+    { id: '1', title: 'Getting Started', subtitle: 'Learn the basics', icon: 'book' },
+    { id: '2', title: 'API Reference', subtitle: 'Complete API docs', icon: 'code' },
+    { id: '3', title: 'Examples', subtitle: 'Code examples', icon: 'lightbulb' },
+    { id: '4', title: 'Theming', subtitle: 'Customize appearance', icon: 'palette' }
   ];
 
-  private recentlyViewed: string[] = [];
-
-  get displayItems(): SearchItem[] {
-    // Show recent items first, then all items
-    const recent = this.allItems.filter(item =>
-      this.recentlyViewed.includes(item.id)
-    );
-    const others = this.allItems.filter(item =>
-      !this.recentlyViewed.includes(item.id)
-    );
-
-    return [
-      ...recent.map(item => ({
-        ...item,
-        subtitle: `⏱️ Recent • ${item.subtitle}`
-      })),
-      ...others
-    ];
-  }
-
   onSelect(item: SearchItem) {
-    // Add to recently viewed
-    this.recentlyViewed = [
-      item.id,
-      ...this.recentlyViewed.filter(id => id !== item.id)
-    ].slice(0, 5); // Keep only last 5
-
-    // Save to localStorage
-    localStorage.setItem('recentlyViewed', JSON.stringify(this.recentlyViewed));
-
     console.log('Selected:', item);
-  }
-
-  ngOnInit() {
-    // Load from localStorage
-    const stored = localStorage.getItem('recentlyViewed');
-    if (stored) {
-      this.recentlyViewed = JSON.parse(stored);
-    }
+    // Item is automatically added to recents!
+    // Saved to localStorage automatically!
   }
 }
+```
+
+**What happens automatically:**
+- When search input is empty → shows recent items
+- When user selects an item → added to recents (max 10 items)
+- When user clicks × button → removes from recents
+- All changes saved to localStorage using key `searchix-recents`
+
+### Option 2: Provide Initial Recent Items
+
+You can provide initial recent items - they will still be saved to localStorage:
+
+```typescript
+import { Component } from '@angular/core';
+import { SearchItem } from 'ng-searchix';
+
+@Component({
+  selector: 'app-provided-recent',
+  template: `
+    <ngx-searchix
+      [items]="items"
+      [recentItems]="recentItems"
+      [placeholder]="'Search...'"
+      (itemSelected)="onSelect($event)"
+    ></ngx-searchix>
+  `
+})
+export class ProvidedRecentComponent {
+  items: SearchItem[] = [
+    { id: '1', title: 'Getting Started', subtitle: 'Learn the basics', icon: 'book' },
+    { id: '2', title: 'API Reference', subtitle: 'Complete API docs', icon: 'code' },
+    { id: '3', title: 'Examples', subtitle: 'Code examples', icon: 'lightbulb' }
+  ];
+
+  // Provide initial recents (optional)
+  recentItems: SearchItem[] = [
+    { id: '1', title: 'Getting Started', subtitle: 'Learn the basics', icon: 'book' }
+  ];
+
+  onSelect(item: SearchItem) {
+    console.log('Selected:', item);
+    // Still saved to localStorage automatically!
+  }
+}
+```
+
+### Features:
+- ✅ **"Recent" header** with clock icon when showing recents
+- ✅ **Delete button (×)** appears on hover over recent items
+- ✅ **Automatic localStorage sync** - no manual management needed
+- ✅ **Smart deduplication** - selecting same item moves it to top
+- ✅ **Automatic limit** - keeps only last 10 recent items
+- ✅ **Works both ways** - with or without provided recentItems
+
+### localStorage Key:
+```typescript
+import { SEARCHIX_RECENTS_KEY } from 'ng-searchix';
+
+// Key is: 'searchix-recents'
+// You can clear it manually if needed:
+localStorage.removeItem(SEARCHIX_RECENTS_KEY);
 ```
 
 ## Example 10: Dark Mode Support

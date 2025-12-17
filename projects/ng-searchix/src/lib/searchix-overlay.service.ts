@@ -22,7 +22,7 @@ export class SearchixOverlayService {
         return !!this.overlayRef;
     }
 
-    open(items: SearchItem[], config?: SearchixConfig): Observable<SearchItem> {
+    open(items: SearchItem[], config?: SearchixConfig, recentItems?: SearchItem[]): Observable<SearchItem> {
         if (this.overlayRef) {
             // close existing before opening a new one (avoid stacked overlays)
             this.close();
@@ -54,6 +54,7 @@ export class SearchixOverlayService {
 
         const data: SearchixDialogData = {
             items,
+            recentItems,
             config: merged,
             selection$,
             close: () => this.close()

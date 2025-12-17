@@ -176,6 +176,7 @@
     <div class="search-wrapper">
       <ngx-searchix
         items="$ctrl.items"
+        recent-items="$ctrl.recentItems"
         placeholder="Search documentation..."
         hotkey="ctrl+k"
         show-ms="true"
@@ -189,6 +190,8 @@
       <p><strong>Try it out:</strong></p>
       <p>• Click the search button above</p>
       <p>• Or press <code>Ctrl+K</code> (Windows/Linux) or <code>Cmd+K</code> (Mac)</p>
+      <p>• When search is empty, you'll see <strong>Recent items</strong></p>
+      <p>• Hover over recent items to see the <strong>delete button (×)</strong></p>
       <p>• Type to filter results</p>
       <p>• Use <code>↑</code> <code>↓</code> to navigate</p>
       <p>• Press <code>Enter</code> to select</p>
@@ -303,6 +306,28 @@
           subtitle: 'Official AngularJS docs',
           icon: 'angular',
           href: 'https://docs.angularjs.org'
+        }
+      ];
+
+      // Recent items (optional - if not provided, will load from localStorage)
+      vm.recentItems = [
+        {
+          id: '1',
+          title: 'Getting Started',
+          subtitle: 'Learn how to install and use ng-searchix-legacy',
+          icon: 'rocket'
+        },
+        {
+          id: '5',
+          title: 'Theming',
+          subtitle: 'Customize appearance with CSS variables',
+          icon: 'palette'
+        },
+        {
+          id: '7',
+          title: 'Examples',
+          subtitle: 'Code examples and demos',
+          icon: 'code'
         }
       ];
 

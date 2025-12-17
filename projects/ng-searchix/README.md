@@ -10,6 +10,7 @@ A beautiful, customizable search component for Angular with keyboard navigation,
 - 🎯 **Icon library integration** (Lucide, Heroicons, Font Awesome, or custom)
 - 🔗 **External link support** with dedicated icon
 - ⌨️ **Keyboard navigation** (↑/↓ arrows, Enter, Esc)
+- ⏱️ **Recent items** with automatic localStorage sync ⭐ NEW
 - 🚀 **Lightweight** with minimal dependencies
 - ♿ **Accessible** with ARIA attributes
 - 📱 **Responsive** design
@@ -163,6 +164,30 @@ Items with `href` automatically show an external link icon:
   icon: 'book'
 }
 ```
+
+### Recent Items ⭐ NEW
+
+Automatically tracks and displays recently selected items:
+
+```typescript
+// Option 1: Auto localStorage (no setup needed!)
+<ngx-searchix [items]="items"></ngx-searchix>
+
+// Option 2: Provide initial recents
+<ngx-searchix
+  [items]="items"
+  [recentItems]="recentItems"
+></ngx-searchix>
+```
+
+**Features:**
+- Shows recent items when search is empty
+- Click × to remove items from recents
+- Auto-saves to localStorage (key: `searchix-recents`)
+- Maximum 10 recent items
+- No manual management needed!
+
+[See full documentation](./EXAMPLES.md#example-9-recent-items-built-in-feature--new)
 
 ## Browser Support
 

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ngx-searchix Demo - Recent Items Feature</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 60px 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #1a202c;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      font-size: 18px;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 8px;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .demo-card {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 24px;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s;
+    }
+
+    .demo-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .demo-card h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #2d3748;
+      display: flex;
+      align-items: center;
+    }
+
+    .demo-card p {
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .info-box {
+      background: #edf2f7;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 40px 0;
+    }
+
+    .info-box h3 {
+      color: #2d3748;
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .info-box ul {
+      margin-left: 20px;
+    }
+
+    .info-box li {
+      color: #4a5568;
+      line-height: 1.8;
+      margin: 8px 0;
+    }
+
+    .info-box code {
+      background: #cbd5e0;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .feature-list {
+      background: #f0fff4;
+      border: 2px solid #9ae6b4;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 40px 0;
+    }
+
+    .feature-list h3 {
+      color: #22543d;
+      font-size: 20px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .feature-list ul {
+      margin-left: 20px;
+    }
+
+    .feature-list li {
+      color: #276749;
+      line-height: 2;
+      font-size: 15px;
+    }
+
+    .feature-list li strong {
+      color: #22543d;
+    }
+
+    .code-block {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .code-block .keyword {
+      color: #f687b3;
+    }
+
+    .code-block .string {
+      color: #68d391;
+    }
+
+    .code-block .property {
+      color: #63b3ed;
+    }
+
+    .code-block .comment {
+      color: #a0aec0;
+      font-style: italic;
+    }
+
+    .search-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .note {
+      background: #fef5e7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px;
+      border-radius: 6px;
+      margin: 16px 0;
+    }
+
+    .note strong {
+      color: #92400e;
+    }
+
+    .note p {
+      color: #78350f;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: #a0aec0;
+      font-size: 14px;
+      padding-top: 40px;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .status {
+      background: #fff5f5;
+      border: 2px solid #fc8181;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .status p {
+      color: #742a2a;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .storage-info {
+      background: #e6fffa;
+      border: 2px solid #81e6d9;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .storage-info p {
+      color: #234e52;
+      margin: 4px 0;
+      font-size: 13px;
+    }
+
+    .storage-info code {
+      background: #b2f5ea;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ngx-searchix <span class="badge">New Feature</span></h1>
+    <p class="subtitle">Recent Items with localStorage Support</p>
+
+    <div class="info-box">
+      <h3>🎉 New Feature: Recent Items</h3>
+      <ul>
+        <li>Shows <strong>recent items</strong> when search input is empty</li>
+        <li>Click <strong>× button</strong> to remove items from recents</li>
+        <li>Selected items <strong>automatically added</strong> to recents</li>
+        <li>Automatically <strong>saved to localStorage</strong></li>
+        <li>Maximum <strong>10 recent items</strong></li>
+        <li>Works with both <strong>provided recentItems</strong> and <strong>localStorage</strong></li>
+      </ul>
+    </div>
+
+    <div class="demo-grid">
+      <!-- Demo 1: With provided recentItems -->
+      <div class="demo-card">
+        <h2>📋 Demo 1: Provided Recent Items</h2>
+        <p>Passing recentItems as input. Changes are saved to localStorage.</p>
+
+        <div class="search-wrapper">
+          <!-- This would be your Angular component -->
+          <div style="text-align: center; padding: 40px; background: #edf2f7; border-radius: 8px; border: 2px dashed #cbd5e0;">
+            <p style="color: #718096; font-size: 14px;">ngx-searchix component placeholder</p>
+            <p style="color: #a0aec0; font-size: 12px; margin-top: 8px;">Click to open search with provided recents</p>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="comment">// TypeScript</span>
+<span class="keyword">recentItems</span>: SearchItem[] = [
+  { <span class="property">id</span>: <span class="string">'1'</span>, <span class="property">title</span>: <span class="string">'Getting Started'</span> },
+  { <span class="property">id</span>: <span class="string">'2'</span>, <span class="property">title</span>: <span class="string">'API Reference'</span> }
+];
+
+<span class="comment">// HTML</span>
+&lt;ngx-searchix
+  [items]="items"
+  [recentItems]="recentItems"
+&gt;&lt;/ngx-searchix&gt;
+        </div>
+
+        <div class="note">
+          <strong>Note:</strong>
+          <p>Provided recents are used as initial value, but all changes are saved to localStorage.</p>
+        </div>
+      </div>
+
+      <!-- Demo 2: Using localStorage -->
+      <div class="demo-card">
+        <h2>💾 Demo 2: Auto localStorage</h2>
+        <p>No recentItems provided. Automatically loads from localStorage.</p>
+
+        <div class="search-wrapper">
+          <div style="text-align: center; padding: 40px; background: #edf2f7; border-radius: 8px; border: 2px dashed #cbd5e0;">
+            <p style="color: #718096; font-size: 14px;">ngx-searchix component placeholder</p>
+            <p style="color: #a0aec0; font-size: 12px; margin-top: 8px;">Opens with recents from localStorage</p>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="comment">// No recentItems needed!</span>
+&lt;ngx-searchix
+  [items]="items"
+&gt;&lt;/ngx-searchix&gt;
+        </div>
+
+        <div class="storage-info">
+          <p><strong>localStorage key:</strong> <code>searchix-recents</code></p>
+          <p><strong>Auto-saves:</strong> On every select/remove action</p>
+          <p><strong>Max items:</strong> 10 most recent</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-list">
+      <h3>✨ How It Works</h3>
+      <ul>
+        <li><strong>Empty Search:</strong> Shows recent items instead of all items</li>
+        <li><strong>On Select:</strong> Item automatically added to recents (top of list)</li>
+        <li><strong>On Remove:</strong> Click × button to remove from recents</li>
+        <li><strong>No Duplicates:</strong> Selecting same item moves it to top</li>
+        <li><strong>Automatic Limit:</strong> Only keeps last 10 recent items</li>
+        <li><strong>Persistent:</strong> Saved to localStorage automatically</li>
+        <li><strong>Flexible:</strong> Works with or without provided recentItems</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <h3>🎨 UI Features</h3>
+      <ul>
+        <li><strong>"Recent" header</strong> with clock icon when showing recents</li>
+        <li><strong>Delete button (×)</strong> appears on hover over recent items</li>
+        <li><strong>Smooth animations</strong> for button appearance</li>
+        <li><strong>Red hover effect</strong> on delete button</li>
+        <li><strong>External link icon</strong> still works alongside delete button</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <h3>💻 Complete Usage Example</h3>
+      <div class="code-block">
+<span class="comment">// app.component.ts</span>
+<span class="keyword">import</span> { Component } from <span class="string">'@angular/core'</span>;
+<span class="keyword">import</span> { SearchItem } from <span class="string">'ngx-searchix'</span>;
+
+@Component({
+  selector: <span class="string">'app-root'</span>,
+  templateUrl: <span class="string">'./app.component.html'</span>
+})
+<span class="keyword">export class</span> AppComponent {
+  <span class="comment">// Your search items</span>
+  items: SearchItem[] = [
+    {
+      id: <span class="string">'1'</span>,
+      title: <span class="string">'Getting Started'</span>,
+      subtitle: <span class="string">'Learn the basics'</span>,
+      icon: <span class="string">'rocket'</span>
+    },
+    {
+      id: <span class="string">'2'</span>,
+      title: <span class="string">'API Reference'</span>,
+      subtitle: <span class="string">'Complete documentation'</span>,
+      icon: <span class="string">'book'</span>
+    }
+    <span class="comment">// ... more items</span>
+  ];
+
+  <span class="comment">// Optional: Provide initial recent items</span>
+  <span class="comment">// If omitted, will load from localStorage automatically</span>
+  recentItems: SearchItem[] = [
+    {
+      id: <span class="string">'1'</span>,
+      title: <span class="string">'Getting Started'</span>,
+      subtitle: <span class="string">'Learn the basics'</span>,
+      icon: <span class="string">'rocket'</span>
+    }
+  ];
+
+  onItemSelected(item: SearchItem) {
+    console.log(<span class="string">'Selected:'</span>, item);
+    <span class="comment">// Item is automatically added to recents!</span>
+  }
+}
+
+<span class="comment">// app.component.html</span>
+&lt;ngx-searchix
+  [items]="items"
+  [recentItems]="recentItems"
+  placeholder="Search documentation..."
+  hotkey="ctrl+k"
+  (itemSelected)="onItemSelected($event)"
+&gt;&lt;/ngx-searchix&gt;
+
+<span class="comment">// Or without recentItems (auto localStorage):</span>
+&lt;ngx-searchix
+  [items]="items"
+  placeholder="Search..."
+&gt;&lt;/ngx-searchix&gt;
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h3>🔑 localStorage Key</h3>
+      <ul>
+        <li>Key: <code>searchix-recents</code></li>
+        <li>Defined in: <code>SEARCHIX_RECENTS_KEY</code> token</li>
+        <li>Format: JSON array of SearchItem objects</li>
+        <li>Auto-managed: No manual intervention needed</li>
+      </ul>
+    </div>
+
+    <div class="note">
+      <strong>⚡ Pro Tip:</strong>
+      <p>You don't need to manage recents manually! Just use the component and it will automatically:</p>
+      <p>1. Add selected items to recents</p>
+      <p>2. Remove items when × is clicked</p>
+      <p>3. Save everything to localStorage</p>
+      <p>4. Load from localStorage on next visit</p>
+    </div>
+
+    <div class="status">
+      <p>📖 This is a documentation example. To see the actual working demo, build and run the Angular application.</p>
+    </div>
+
+    <footer>
+      <p>Built with ❤️ using ngx-searchix</p>
+      <p style="margin-top: 8px;">
+        <a href="https://github.com/yourusername/ngx-searchix" target="_blank">GitHub</a> •
+        <a href="README.md">Documentation</a> •
+        <a href="EXAMPLES.md">More Examples</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

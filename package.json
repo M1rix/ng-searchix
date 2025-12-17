@@ -6,6 +6,7 @@
     "build": "ng build ng-searchix",
     "build:legacy": "node projects/ng-searchix-legacy/build.js",
     "build:all": "npm run build && npm run build:legacy",
+    "publish": "npm run build && cd dist/ng-searchix && npm publish --access public",
     "test": "ng test",
     "lint": "ng lint"
   },
