@@ -132,7 +132,7 @@
   font-size: var(--searchix-recents-header-font, 12px);
   font-weight: var(--searchix-recents-header-weight, 600);
   color: var(--searchix-muted, rgba(17, 24, 39, 0.5));
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.5px;
   background: var(--searchix-recents-header-bg, rgba(0, 0, 0, 0.02));
   border-bottom: 1px solid var(--searchix-border, rgba(0, 0, 0, 0.06));

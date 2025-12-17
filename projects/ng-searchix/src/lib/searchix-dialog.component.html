@@ -41,10 +41,9 @@
 
     <!-- Results List -->
     <ng-template #list>
-        <div #searchList class="searchix__list">
-            <!-- Recent Items Header -->
-            <div *ngIf="isShowingRecents" class="searchix__recents-header">
-                <svg
+        <!-- Recent Items Header -->
+        <div *ngIf="isShowingRecents" class="searchix__recents-header">
+            <svg
                     width="16"
                     height="16"
                     viewBox="0 0 24 24"
@@ -53,13 +52,13 @@
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                <span>Recents</span>
-            </div>
-
+            >
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Recents</span>
+        </div>
+        <div #searchList class="searchix__list">
             <!-- Items List -->
             <button
                 *ngFor="let it of displayItems; let i = index; trackBy: trackById"
