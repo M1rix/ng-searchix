@@ -18,6 +18,7 @@ export class SearchixComponent {
   @Input() hotkey?: string; // e.g. 'ctrl+k'
   @Input() closeOnSelect?: boolean;
   @Input() showMs?: boolean;
+  @Input() showResultsCount?: boolean;
   @Input() maxResults?: number;
   @Input() iconTemplate?: TemplateRef<any> | null = null;
   @Input() iconRenderer?: TemplateRef<any>;
@@ -39,6 +40,7 @@ export class SearchixComponent {
     const config: SearchixConfig = {
       ...this.defaultConfig,
       showMs: this.showMs ?? this.defaultConfig?.showMs,
+      showResultsCount: this.showResultsCount ?? this.defaultConfig?.showResultsCount,
       label: this.label ?? this.defaultConfig?.label,
       placeholder: this.placeholder ?? this.defaultConfig?.placeholder,
       hotkey: this.hotkey ?? this.defaultConfig?.hotkey,

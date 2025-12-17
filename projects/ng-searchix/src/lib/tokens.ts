@@ -7,6 +7,7 @@ export interface SearchixConfig {
   hotkey?: string; // e.g. "ctrl+k" or "cmd+k"
   closeOnSelect?: boolean;
   showMs?: boolean;
+  showResultsCount?: boolean;
   maxResults?: number;
   // Optional initial items provider hook (host can still pass items directly)
   // Keeping it sync to stay Angular-12 friendly; you can extend later.

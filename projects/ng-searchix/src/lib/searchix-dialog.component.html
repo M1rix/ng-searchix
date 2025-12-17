@@ -158,7 +158,7 @@
     <!-- Footer -->
     <div class="searchix__footer">
         <div class="searchix__footer-info">
-            <span class="searchix__footer-count">
+            <span *ngIf="data.config.showResultsCount" class="searchix__footer-count">
                 {{ (displayItems?.length || 0) }} {{ (displayItems?.length || 0) === 1 ? 'result' : 'results' }}
             </span>
             <span *ngIf="data.config.showMs" class="searchix__footer-time">
