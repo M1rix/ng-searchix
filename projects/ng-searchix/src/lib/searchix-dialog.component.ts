@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 
@@ -36,6 +36,10 @@ export class SearchixDialogComponent implements AfterViewInit {
         // Load recents from input or localStorage
         this.recents = this.loadRecents();
 
+        // Initialize results with empty search (will show all items if no recents)
+        this.results = this.filter('');
+
+        // Update results when search query changes
         this.q.valueChanges.subscribe(val => {
             this.activeIndex = 0;
             this.results = this.filter(val || '');
@@ -44,6 +48,23 @@ export class SearchixDialogComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         setTimeout(() => (window.document.getElementById('searchix-input')?.focus()));
+    }
+
+    // Check if we should show recents (when search input is empty)
+    get isShowingRecents(): boolean {
+        const searchValue = this.q.value || '';
+        return searchValue.trim() === '' && this.recents.length > 0;
+    }
+
+    // Get items to display (recents or search results)
+    get displayItems(): SearchItem[] {
+        return this.isShowingRecents ? this.recents : this.results;
+    }
+
+    // Check if search input is empty
+    get isSearchEmpty(): boolean {
+        const searchValue = this.q.value || '';
+        return searchValue.trim() === '';
     }
 
     trackById(_: number, it: SearchItem): string {
@@ -78,11 +99,10 @@ export class SearchixDialogComponent implements AfterViewInit {
 
     @HostListener('document:keydown', ['$event'])
     onKeydown(e: KeyboardEvent): void {
-        // Only handle keys while dialog is open.
-        // Overlay already listens for Escape globally, but we handle arrows/enter here.
+        // Handle keyboard navigation for both recents and search results
         if (e.key === 'ArrowDown') {
             e.preventDefault();
-            this.activeIndex = Math.min(this.activeIndex + 1, Math.max(0, this.results.length - 1));
+            this.activeIndex = Math.min(this.activeIndex + 1, Math.max(0, this.displayItems.length - 1));
             window.document.querySelector(`#searchix__item-${this.activeIndex}`)?.scrollIntoView({
                 block: 'nearest',
                 inline: 'nearest',
@@ -97,7 +117,7 @@ export class SearchixDialogComponent implements AfterViewInit {
                 behavior: 'smooth'
             });
         } else if (e.key === 'Enter') {
-            const item = this.results[this.activeIndex];
+            const item = this.displayItems[this.activeIndex];
             if (item) {
                 e.preventDefault();
                 this.select(item);
@@ -113,6 +133,9 @@ export class SearchixDialogComponent implements AfterViewInit {
 
         // Save to localStorage
         this.saveRecentsToLocalStorage();
+
+        // Reset active index to avoid pointing to removed item
+        this.activeIndex = 0;
 
         // Update results if search is empty
         if (!this.q.value || this.q.value.trim() === '') {
