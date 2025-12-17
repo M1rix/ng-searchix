@@ -6,7 +6,7 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: var(--searchix-z, 10000);
+    z-index: var(--searchix-z, 10000) !important;
 }
 
 .cdk-overlay-pane {
