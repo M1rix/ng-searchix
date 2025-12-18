@@ -3,8 +3,8 @@
   "version": "1.0.1",
   "description": "Advanced search interface component for AngularJS 1.5.8+ with keyboard shortcuts and fuzzy search",
   "main": [
-    "ng-searchix-legacy/ng-searchix-legacy.js",
-    "ng-searchix-legacy/ng-searchix-legacy.css"
+    "ng-searchix-legacy.js",
+    "ng-searchix-legacy.css"
   ],
   "keywords": [
     "angularjs",
@@ -22,10 +22,10 @@
     "ng-searchix-legacy contributors"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/M1rix/ng-searchix",
+  "homepage": "https://github.com/yourusername/ng-searchix-legacy",
   "repository": {
     "type": "git",
-    "url": "https://github.com/M1rix/ng-searchix.git"
+    "url": "https://github.com/yourusername/ng-searchix-legacy.git"
   },
   "dependencies": {
     "angular": "^1.5.8"
