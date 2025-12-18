@@ -1,0 +1,167 @@
+@import "../../../node_modules/@angular/cdk/overlay-prebuilt.css";
+
+/* ===== CDK Overlay base ===== */
+.cdk-overlay-container,
+.cdk-global-overlay-wrapper {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--searchix-z, 10000) !important;
+}
+
+.cdk-overlay-pane {
+    position: absolute;
+    pointer-events: auto;
+}
+
+/* ===== Overlay classes used by ng-searchix ===== */
+.ngx-searchix-backdrop {
+    background: var(--searchix-backdrop, rgba(0, 0, 0, 0.3));
+    backdrop-filter: blur(var(--searchix-backdrop-blur, 4px));
+    transition: opacity 0.2s ease;
+}
+
+.ngx-searchix-panel {
+    width: var(--searchix-panel-width, auto);
+    border-radius: var(--searchix-radius, 12px);
+    box-shadow: var(--searchix-shadow, 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04));
+    overflow: hidden;
+    animation: searchix-fade-in 0.2s ease;
+}
+
+.ngx-searchix-panel ngx-searchix-dialog {
+    width: 100%;
+}
+
+@keyframes searchix-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ===== CSS Variables Documentation =====
+ *
+ * Global:
+ * --searchix-z: Z-index for overlay (default: 10000)
+ * --searchix-font: Font family (default: system-ui)
+ * --searchix-bg: Background color (default: #ffffff)
+ * --searchix-fg: Text color (default: #111827)
+ * --searchix-border: Border color (default: rgba(0,0,0,0.08))
+ * --searchix-muted: Muted text color (default: rgba(17,24,39,0.5))
+ * --searchix-width: Dialog width (default: 640px)
+ *
+ * Backdrop:
+ * --searchix-backdrop: Backdrop color (default: rgba(0,0,0,0.3))
+ * --searchix-backdrop-blur: Backdrop blur (default: 4px)
+ *
+ * Panel:
+ * --searchix-panel-width: Panel width (default: auto)
+ * --searchix-radius: Border radius (default: 12px)
+ * --searchix-shadow: Box shadow
+ *
+ * Trigger Button:
+ * --searchix-trigger-bg: Background (default: #ffffff)
+ * --searchix-trigger-bg-hover: Hover background
+ * --searchix-trigger-color: Text color
+ * --searchix-trigger-border: Border color
+ * --searchix-trigger-border-hover: Hover border
+ * --searchix-trigger-radius: Border radius (default: 8px)
+ * --searchix-trigger-shadow: Box shadow
+ * --searchix-trigger-shadow-hover: Hover shadow
+ * --searchix-trigger-px: Horizontal padding (default: 12px)
+ * --searchix-trigger-py: Vertical padding (default: 8px)
+ * --searchix-trigger-gap: Gap between elements (default: 10px)
+ * --searchix-trigger-font-size: Font size (default: 14px)
+ * --searchix-trigger-icon-opacity: Icon opacity (default: 0.6)
+ * --searchix-trigger-label-weight: Label font weight
+ * --searchix-trigger-hint-bg: Hint background
+ * --searchix-trigger-hint-border: Hint border
+ * --searchix-trigger-hint-font: Hint font size (default: 12px)
+ * --searchix-trigger-outline: Focus outline color
+ *
+ * Header:
+ * --searchix-header-bg: Header background
+ * --searchix-header-px: Horizontal padding (default: 20px)
+ * --searchix-header-py: Vertical padding (default: 16px)
+ * --searchix-header-gap: Gap (default: 12px)
+ * --searchix-icon-opacity: Search icon opacity (default: 0.5)
+ * --searchix-icon-color: Icon color
+ *
+ * Input:
+ * --searchix-input-font: Font size (default: 16px)
+ * --searchix-placeholder: Placeholder color
+ *
+ * Keyboard Shortcuts:
+ * --searchix-kbd-bg: Background
+ * --searchix-kbd-fg: Text color
+ * --searchix-kbd-border: Border
+ * --searchix-kbd-radius: Border radius (default: 4px)
+ * --searchix-kbd-font: Font size (default: 12px)
+ * --searchix-kbd-px: Horizontal padding (default: 8px)
+ * --searchix-kbd-py: Vertical padding (default: 4px)
+ * --searchix-kbd-font-family: Font family
+ * --searchix-kbd-weight: Font weight (default: 500)
+ *
+ * Content/Empty:
+ * --searchix-content-minh: Min height (default: 320px)
+ * --searchix-content-px: Horizontal padding (default: 20px)
+ * --searchix-content-py: Vertical padding (default: 40px)
+ * --searchix-empty-font: Font size (default: 16px)
+ * --searchix-empty-weight: Font weight (default: 500)
+ * --searchix-empty-icon-opacity: Icon opacity (default: 0.3)
+ *
+ * List:
+ * --searchix-list-maxh: Max height (default: 400px)
+ * --searchix-scrollbar-width: Scrollbar width (default: 8px)
+ * --searchix-scrollbar-track-bg: Track background
+ * --searchix-scrollbar-thumb-bg: Thumb background
+ * --searchix-scrollbar-thumb-bg-hover: Thumb hover
+ * --searchix-scrollbar-thumb-radius: Thumb radius
+ *
+ * Items:
+ * --searchix-item-px: Horizontal padding (default: 20px)
+ * --searchix-item-py: Vertical padding (default: 12px)
+ * --searchix-item-gap: Gap (default: 12px)
+ * --searchix-item-hover: Hover background
+ * --searchix-item-active-bg: Active background
+ * --searchix-item-active-border: Active border
+ * --searchix-item-content-gap: Content gap (default: 12px)
+ * --searchix-item-icon-size: Icon size (default: 20px)
+ * --searchix-item-icon-color: Icon color
+ * --searchix-item-icon-opacity: Icon opacity (default: 0.6)
+ * --searchix-item-title-font: Title font size (default: 14px)
+ * --searchix-item-title-weight: Title font weight (default: 500)
+ * --searchix-item-title-color: Title color
+ * --searchix-item-subtitle-font: Subtitle font size (default: 13px)
+ * --searchix-item-subtitle-mt: Subtitle margin top (default: 2px)
+ * --searchix-item-external-size: External link size (default: 32px)
+ * --searchix-item-external-radius: External link radius (default: 6px)
+ * --searchix-item-external-bg: External link background
+ * --searchix-item-external-bg-hover: External link hover
+ * --searchix-item-external-color: External link color
+ * --searchix-item-external-color-hover: External link hover color
+ *
+ * Footer:
+ * --searchix-footer-bg: Footer background
+ * --searchix-footer-px: Horizontal padding (default: 20px)
+ * --searchix-footer-py: Vertical padding (default: 12px)
+ * --searchix-footer-gap: Gap (default: 16px)
+ * --searchix-footer-font: Font size (default: 12px)
+ * --searchix-footer-info-gap: Info gap (default: 8px)
+ * --searchix-footer-count-weight: Count font weight (default: 500)
+ * --searchix-footer-time-opacity: Time opacity (default: 0.7)
+ * --searchix-footer-hints-gap: Hints gap (default: 8px)
+ * --searchix-footer-kbd-bg: Kbd background
+ * --searchix-footer-kbd-fg: Kbd color
+ * --searchix-footer-kbd-border: Kbd border
+ * --searchix-footer-kbd-radius: Kbd radius (default: 4px)
+ * --searchix-footer-kbd-font: Kbd font size (default: 11px)
+ * --searchix-footer-kbd-px: Kbd horizontal padding (default: 6px)
+ * --searchix-footer-kbd-py: Kbd vertical padding (default: 3px)
+ * --searchix-footer-kbd-font-family: Kbd font family
+ */

@@ -5,6 +5,8 @@
 (function(angular) {
   'use strict';
 
+  var SEARCHIX_RECENTS_KEY = 'searchix-recents';
+
   SearchixOverlayService.$inject = ['$compile', '$rootScope', '$document', '$timeout', 'searchixConfig'];
 
   function SearchixOverlayService($compile, $rootScope, $document, $timeout, searchixConfig) {
@@ -24,7 +26,7 @@
       return !!overlayElement;
     }
 
-    function open(items, config, onSelect, onClose) {
+    function open(items, config, recentItems, onSelect, onClose) {
       // Close existing overlay
       if (overlayElement) {
         close();
@@ -36,9 +38,11 @@
       // Create new scope for dialog
       overlayScope = $rootScope.$new(true);
       overlayScope.items = items || [];
+      overlayScope.recentItems = recentItems;
       overlayScope.config = mergedConfig;
       overlayScope.onSelect = onSelect;
       overlayScope.onClose = onClose;
+      overlayScope.SEARCHIX_RECENTS_KEY = SEARCHIX_RECENTS_KEY;
 
       // Debug logging
       console.log('[searchix-overlay] Opening with items:', overlayScope.items.length, 'items');
@@ -142,22 +146,48 @@
     // State
     $ctrl.query = '';
     $ctrl.results = [];
+    $ctrl.recents = [];
     $ctrl.activeIndex = 0;
     $ctrl.searchMs = 0;
     $ctrl.items = $scope.items || [];
     $ctrl.config = $scope.config || {};
+
+    // Computed properties
+    Object.defineProperty($ctrl, 'isShowingRecents', {
+      get: function() {
+        var searchValue = $ctrl.query || '';
+        return searchValue.trim() === '' && $ctrl.recents.length > 0;
+      }
+    });
+
+    Object.defineProperty($ctrl, 'displayItems', {
+      get: function() {
+        return $ctrl.isShowingRecents ? $ctrl.recents : $ctrl.results;
+      }
+    });
+
+    Object.defineProperty($ctrl, 'isSearchEmpty', {
+      get: function() {
+        var searchValue = $ctrl.query || '';
+        return searchValue.trim() === '';
+      }
+    });
 
     // Methods
     $ctrl.onQueryChange = onQueryChange;
     $ctrl.onKeydown = onKeydown;
     $ctrl.select = select;
     $ctrl.openExternal = openExternal;
+    $ctrl.removeRecent = removeRecent;
     $ctrl.close = close;
 
     // Initialize
     init();
 
     function init() {
+      // Load recents from input or localStorage
+      $ctrl.recents = loadRecents();
+      // Initialize results with empty search
       $ctrl.results = filter('');
     }
 
@@ -167,14 +197,29 @@
     }
 
     function onKeydown(event) {
+      // Handle keyboard navigation for both recents and search results
       if (event.key === 'ArrowDown' || event.keyCode === 40) {
         event.preventDefault();
-        $ctrl.activeIndex = Math.min($ctrl.activeIndex + 1, Math.max(0, $ctrl.results.length - 1));
+        $ctrl.activeIndex = Math.min($ctrl.activeIndex + 1, Math.max(0, $ctrl.displayItems.length - 1));
+        // Scroll into view
+        $timeout(function() {
+          var elem = document.querySelector('#searchix__item-' + $ctrl.activeIndex);
+          if (elem) {
+            elem.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+          }
+        }, 0);
       } else if (event.key === 'ArrowUp' || event.keyCode === 38) {
         event.preventDefault();
         $ctrl.activeIndex = Math.max($ctrl.activeIndex - 1, 0);
+        // Scroll into view
+        $timeout(function() {
+          var elem = document.querySelector('#searchix__item-' + $ctrl.activeIndex);
+          if (elem) {
+            elem.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+          }
+        }, 0);
       } else if (event.key === 'Enter' || event.keyCode === 13) {
-        var item = $ctrl.results[$ctrl.activeIndex];
+        var item = $ctrl.displayItems[$ctrl.activeIndex];
         if (item) {
           event.preventDefault();
           select(item);
@@ -183,6 +228,9 @@
     }
 
     function select(item) {
+      // Add selected item to recents
+      addToRecents(item);
+
       // Default navigation behavior if href exists and autoNavigate is enabled
       if (item.href && $ctrl.config.autoNavigate !== false) {
         var href = item.href;
@@ -234,6 +282,73 @@
       }
     }
 
+    function removeRecent(event, item) {
+      event.stopPropagation();
+
+      // Remove from recents array
+      $ctrl.recents = $ctrl.recents.filter(function(it) {
+        return it.id !== item.id;
+      });
+
+      // Save to localStorage
+      saveRecentsToLocalStorage();
+
+      // Reset active index to avoid pointing to removed item
+      $ctrl.activeIndex = 0;
+
+      // Update results if search is empty
+      if (!$ctrl.query || $ctrl.query.trim() === '') {
+        $ctrl.results = filter('');
+      }
+    }
+
+    function addToRecents(item) {
+      // Remove duplicate if exists
+      $ctrl.recents = $ctrl.recents.filter(function(it) {
+        return it.id !== item.id;
+      });
+
+      // Add to the beginning
+      $ctrl.recents.unshift(item);
+
+      // Limit to 10 recent items
+      var maxRecents = 10;
+      if ($ctrl.recents.length > maxRecents) {
+        $ctrl.recents = $ctrl.recents.slice(0, maxRecents);
+      }
+
+      // Save to localStorage
+      saveRecentsToLocalStorage();
+    }
+
+    function loadRecents() {
+      // If recentItems provided as input, use them as initial value
+      // Note: they will be updated and saved to localStorage on select/remove
+      if ($scope.recentItems && $scope.recentItems.length > 0) {
+        return angular.copy($scope.recentItems); // Create a copy to avoid mutating input
+      }
+
+      // Otherwise, load from localStorage
+      try {
+        var stored = localStorage.getItem($scope.SEARCHIX_RECENTS_KEY);
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (e) {
+        console.warn('Failed to load recents from localStorage:', e);
+      }
+
+      return [];
+    }
+
+    function saveRecentsToLocalStorage() {
+      try {
+        localStorage.setItem($scope.SEARCHIX_RECENTS_KEY, JSON.stringify($ctrl.recents));
+      } catch (e) {
+        console.warn('Failed to save recents to localStorage:', e);
+      }
+    }
+
     function filter(q) {
       var start = performance.now();
       var query = (q || '').trim().toLowerCase();
@@ -246,8 +361,11 @@
         return result.slice(0, max);
       }
 
-      // Return all if no query
+      // If query is empty, show recents
       if (!query) {
+        if ($ctrl.recents.length > 0) {
+          return $ctrl.recents.slice(0, max);
+        }
         return items.slice(0, max);
       }
 

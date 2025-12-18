@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html ng-app="testApp">
+<head>
+  <meta charset="UTF-8">
+  <title>ng-searchix-legacy Test</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+  <link rel="stylesheet" href="ng-searchix-legacy.css">
+  <script src="ng-searchix-legacy.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 40px; }
+    .status { padding: 20px; margin: 20px 0; border-radius: 4px; }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body ng-controller="TestCtrl as $ctrl">
+  <h1>ng-searchix-legacy Test</h1>
+
+  <div id="status" class="status success">
+    ✅ Library loaded successfully! No errors.
+  </div>
+
+  <h2>Component Test</h2>
+  <ngx-searchix
+    items="$ctrl.items"
+    on-item-selected="$ctrl.onSelect($item)"
+  ></ngx-searchix>
+
+  <div ng-if="$ctrl.selected" style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 4px;">
+    <strong>Selected:</strong>
+    <pre>{{ $ctrl.selected | json }}</pre>
+  </div>
+
+  <script>
+    angular.module('testApp', ['ngSearchixLegacy'])
+      .controller('TestCtrl', function() {
+        var vm = this;
+
+        vm.items = [
+          { id: '1', title: 'Test Item 1', subtitle: 'Description 1' },
+          { id: '2', title: 'Test Item 2', subtitle: 'Description 2' },
+          { id: '3', title: 'Test Item 3', subtitle: 'Description 3' }
+        ];
+
+        vm.selected = null;
+
+        vm.onSelect = function(item) {
+          vm.selected = item;
+          console.log('Selected:', item);
+        };
+      });
+
+    // Check for errors
+    window.onerror = function(msg, url, line) {
+      document.getElementById('status').className = 'status error';
+      document.getElementById('status').innerHTML = '❌ Error: ' + msg;
+      return false;
+    };
+  </script>
+</body>
+</html>

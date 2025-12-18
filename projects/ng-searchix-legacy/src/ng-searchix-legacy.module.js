@@ -32,9 +32,11 @@
   function SearchixConfigProvider() {
     var defaults = {
       placeholder: 'Search...',
+      label: 'Lookup',
       hotkey: 'ctrl+k',
       closeOnSelect: true,
       showMs: false,
+      showResultsCount: false,
       maxResults: 50,
       emitOnExternalOpen: false,
       autoNavigate: true  // Automatically navigate to href on select
@@ -67,7 +69,7 @@
           '<path d="m21 21-4.35-4.35"></path>' +
         '</svg>' +
         '<div ng-if="$ctrl.iconTemplate" ng-include="$ctrl.iconTemplate"></div>' +
-        '<span class="ngx-searchix-label">Search</span>' +
+        '<span class="ngx-searchix-label">{{ ($ctrl.label || \'Lookup\') }}</span>' +
         '<code class="ngx-searchix-hint">{{ $ctrl.getHotkey() }}</code>' +
       '</button>'
     );
@@ -84,56 +86,80 @@
             'placeholder="{{ $ctrl.config.placeholder || \'Search...\' }}" ' +
             'ng-change="$ctrl.onQueryChange()" ' +
             'ng-keydown="$ctrl.onKeydown($event)" ' +
+            'id="searchix-input" ' +
             'autofocus />' +
-          '<code class="searchix__kbd">esc</code>' +
+          '<kbd class="searchix__kbd">esc</kbd>' +
         '</div>' +
 
-        '<div class="searchix__content" ng-if="!$ctrl.results.length">' +
+        '<div class="searchix__content" ng-if="!$ctrl.displayItems.length">' +
           '<div class="searchix__empty">' +
             '<svg class="searchix__empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
               '<circle cx="11" cy="11" r="8"></circle>' +
               '<path d="m21 21-4.35-4.35"></path>' +
             '</svg>' +
-            '<p>No results found</p>' +
+            '<p>{{ $ctrl.isSearchEmpty ? \'No recent searches\' : \'No results found\' }}</p>' +
           '</div>' +
         '</div>' +
 
-        '<div class="searchix__list" ng-if="$ctrl.results.length">' +
-          '<button type="button" class="searchix__item" ' +
-            'ng-repeat="item in $ctrl.results track by item.id" ' +
-            'ng-click="$ctrl.select(item)" ' +
-            'ng-class="{active: $index === $ctrl.activeIndex}">' +
-            '<div class="searchix__item-content">' +
-              '<div class="searchix__item-icon" ng-if="item.icon">' +
-                '<div ng-if="$ctrl.config.iconRenderer" ng-include="$ctrl.config.iconRenderer"></div>' +
-                '<svg ng-if="!$ctrl.config.iconRenderer" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                  '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>' +
-                  '<polyline points="14 2 14 8 20 8"></polyline>' +
-                '</svg>' +
+        '<div ng-if="$ctrl.displayItems.length">' +
+          '<div class="searchix__recents-header" ng-if="$ctrl.isShowingRecents">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+              '<circle cx="12" cy="12" r="10"></circle>' +
+              '<polyline points="12 6 12 12 16 14"></polyline>' +
+            '</svg>' +
+            '<span>Recents</span>' +
+          '</div>' +
+          '<div class="searchix__list">' +
+            '<button type="button" class="searchix__item" ' +
+              'ng-repeat="item in $ctrl.displayItems track by item.id" ' +
+              'id="searchix__item-{{$index}}" ' +
+              'ng-click="$ctrl.select(item)" ' +
+              'ng-class="{active: $index === $ctrl.activeIndex}">' +
+              '<div class="searchix__item-content">' +
+                '<div class="searchix__item-icon" ng-if="item.icon">' +
+                  '<div ng-if="$ctrl.config.iconRenderer" ng-include="$ctrl.config.iconRenderer"></div>' +
+                  '<svg ng-if="!$ctrl.config.iconRenderer" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>' +
+                    '<polyline points="14 2 14 8 20 8"></polyline>' +
+                  '</svg>' +
+                '</div>' +
+                '<div class="searchix__item-text">' +
+                  '<div class="searchix__item-title">{{ item.title }}</div>' +
+                  '<div class="searchix__item-subtitle" ng-if="item.subtitle">{{ item.subtitle }}</div>' +
+                '</div>' +
               '</div>' +
-              '<div class="searchix__item-text">' +
-                '<div class="searchix__item-title">{{ item.title }}</div>' +
-                '<div class="searchix__item-subtitle" ng-if="item.subtitle">{{ item.subtitle }}</div>' +
+              '<div class="searchix__item-actions">' +
+                '<button type="button" class="searchix__item-delete" ' +
+                  'ng-if="$ctrl.isShowingRecents" ' +
+                  'title="Remove from recents" ' +
+                  'ng-click="$ctrl.removeRecent($event, item)">' +
+                  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<line x1="18" y1="6" x2="6" y2="18"></line>' +
+                    '<line x1="6" y1="6" x2="18" y2="18"></line>' +
+                  '</svg>' +
+                '</button>' +
+                '<a ng-if="item.href" class="searchix__item-external" ' +
+                  'ng-href="{{ item.href }}" ' +
+                  'target="_blank" ' +
+                  'rel="noopener noreferrer" ' +
+                  'ng-click="$ctrl.openExternal($event, item)" ' +
+                  'title="Open in new tab">' +
+                  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>' +
+                    '<polyline points="15 3 21 3 21 9"></polyline>' +
+                    '<line x1="10" y1="14" x2="21" y2="3"></line>' +
+                  '</svg>' +
+                '</a>' +
               '</div>' +
-            '</div>' +
-            '<a ng-if="item.href" class="searchix__item-external" ' +
-              'ng-href="{{ item.href }}" ' +
-              'target="_blank" ' +
-              'rel="noopener noreferrer" ' +
-              'ng-click="$ctrl.openExternal($event, item)" ' +
-              'title="Open in new tab">' +
-              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>' +
-                '<polyline points="15 3 21 3 21 9"></polyline>' +
-                '<line x1="10" y1="14" x2="21" y2="3"></line>' +
-              '</svg>' +
-            '</a>' +
-          '</button>' +
+            '</button>' +
+          '</div>' +
         '</div>' +
 
         '<div class="searchix__footer">' +
           '<div class="searchix__footer-info">' +
-            '<span class="searchix__footer-count">{{ $ctrl.results.length }} {{ $ctrl.results.length === 1 ? "result" : "results" }}</span>' +
+            '<span class="searchix__footer-count" ng-if="$ctrl.config.showResultsCount">' +
+              '{{ ($ctrl.displayItems.length || 0) }} {{ ($ctrl.displayItems.length || 0) === 1 ? "result" : "results" }}' +
+            '</span>' +
             '<span ng-if="$ctrl.config.showMs" class="searchix__footer-time">{{ $ctrl.searchMs }}ms</span>' +
           '</div>' +
           '<div class="searchix__footer-hints">' +

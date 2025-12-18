@@ -10,10 +10,13 @@
       templateUrl: 'ngx-searchix/searchix.html',
       bindings: {
         items: '<',              // SearchItem[]
+        recentItems: '<?',       // SearchItem[]
         placeholder: '@?',       // string
+        label: '@?',             // string (e.g., 'Search')
         hotkey: '@?',           // string (e.g., 'ctrl+k')
         closeOnSelect: '<?',    // boolean
         showMs: '<?',           // boolean
+        showResultsCount: '<?', // boolean
         maxResults: '<?',       // number
         iconTemplate: '@?',     // template URL
         iconRenderer: '@?',     // template URL
@@ -59,9 +62,11 @@
     function open() {
       var config = {
         placeholder: $ctrl.placeholder || defaults.placeholder,
+        label: $ctrl.label || defaults.label,
         hotkey: $ctrl.hotkey || defaults.hotkey,
         closeOnSelect: $ctrl.closeOnSelect !== undefined ? $ctrl.closeOnSelect : defaults.closeOnSelect,
         showMs: $ctrl.showMs !== undefined ? $ctrl.showMs : defaults.showMs,
+        showResultsCount: $ctrl.showResultsCount !== undefined ? $ctrl.showResultsCount : defaults.showResultsCount,
         maxResults: $ctrl.maxResults || defaults.maxResults,
         iconRenderer: $ctrl.iconRenderer || defaults.iconRenderer,
         emitOnExternalOpen: $ctrl.emitOnExternalOpen !== undefined ? $ctrl.emitOnExternalOpen : defaults.emitOnExternalOpen
@@ -78,7 +83,7 @@
       }
 
       // Open overlay and subscribe to selection
-      subscription = searchixOverlay.open($ctrl.items || [], config, function(item) {
+      subscription = searchixOverlay.open($ctrl.items || [], config, $ctrl.recentItems, function(item) {
         // On item selected
         if ($ctrl.onItemSelected) {
           $ctrl.onItemSelected({ $item: item });
