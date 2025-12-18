@@ -22,10 +22,10 @@
     "ng-searchix-legacy contributors"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/M1rix/ng-searchix-workspace",
+  "homepage": "https://github.com/M1rix/ng-searchix",
   "repository": {
     "type": "git",
-    "url": "https://github.com/M1rix/ng-searchix-workspace.git"
+    "url": "https://github.com/M1rix/ng-searchix.git"
   },
   "dependencies": {
     "angular": "^1.5.8"
