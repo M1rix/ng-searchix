@@ -137,7 +137,7 @@
             '        <div class="searchix__item-content">',
 
             '          <div class="searchix__item-icon" ng-if="item.icon">',
-            '            <div ng-if="$ctrl.config.iconRenderer" ng-include="$ctrl.config.iconRenderer"></div>',
+            '            <div ng-if="$ctrl.config.iconRenderer" ng-include="$ctrl.config.iconRenderer" ng-init="icon=item.icon"></div>',
             '            <svg ng-if="!$ctrl.config.iconRenderer" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
             '                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
             '              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>',
