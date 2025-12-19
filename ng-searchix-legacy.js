@@ -160,29 +160,28 @@
               '</div>' +
             '</button>' +
           '</div>' +
-        '</div>' +
-
-        '<div class="searchix__footer">' +
-          '<div class="searchix__footer-info">' +
-            '<span class="searchix__footer-count" ng-if="$ctrl.config.showResultsCount">' +
-              '{{ ($ctrl.displayItems.length || 0) }} {{ ($ctrl.displayItems.length || 0) === 1 ? "result" : "results" }}' +
-            '</span>' +
-            '<span ng-if="$ctrl.config.showMs" class="searchix__footer-time">{{ $ctrl.searchMs }}ms</span>' +
+          '<div class="searchix__footer">' +
+            '<div class="searchix__footer-info">' +
+              '<span class="searchix__footer-count" ng-if="$ctrl.config.showResultsCount">' +
+                  '{{ ($ctrl.displayItems.length || 0) }} {{ ($ctrl.displayItems.length || 0) === 1 ? "result" : "results" }}' +
+              '</span>' +
+              '<span ng-if="$ctrl.config.showMs" class="searchix__footer-time">{{ $ctrl.searchMs }}ms</span>' +
+              '</div>' +
+              '<div class="searchix__footer-hints">' +
+                '<kbd class="searchix__footer-kbd">' +
+                  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                     '<polyline points="18 15 12 9 6 15"></polyline>' +
+                  '</svg>' +
+                  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                     '<polyline points="6 9 12 15 18 9"></polyline>' +
+                  '</svg>' +
+                      'navigate' +
+                '</kbd>' +
+                '<kbd class="searchix__footer-kbd">↵ select</kbd>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
-          '<div class="searchix__footer-hints">' +
-            '<kbd class="searchix__footer-kbd">' +
-              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                '<polyline points="18 15 12 9 6 15"></polyline>' +
-              '</svg>' +
-              '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                '<polyline points="6 9 12 15 18 9"></polyline>' +
-              '</svg>' +
-              'navigate' +
-            '</kbd>' +
-            '<kbd class="searchix__footer-kbd">↵ select</kbd>' +
-          '</div>' +
-        '</div>' +
-      '</div>'
+        '</div>'
     );
   }
 
@@ -757,5 +756,3 @@
     .component('ngxSearchix', SearchixComponent());
 
 })(window.angular);
-
-
