@@ -233,22 +233,63 @@ Override CSS variables to customize appearance:
 }
 ```
 
+### Fuzzy Search with Fuse.js
+
+ng-searchix-legacy now uses **Fuse.js** for fuzzy search by default. You can customize the search behavior by passing Fuse.js options:
+
+```javascript
+// Configure Fuse.js options globally
+searchixConfigProvider.setDefaults({
+  fuseOptions: {
+    keys: ['title', 'subtitle'],
+    threshold: 0.3,        // 0.0 = exact match, 1.0 = match anything
+    ignoreLocation: true,  // Search entire string
+    minMatchCharLength: 2
+  }
+});
+```
+
+Or pass options to individual components:
+
+```html
+<ngx-searchix
+  items="$ctrl.items"
+  config="{ fuseOptions: { threshold: 0.2 } }"
+  on-item-selected="$ctrl.handleSelect($item)"
+></ngx-searchix>
+```
+
+#### Fuse.js Options Reference
+
+Common options you can configure:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `threshold` | `number` | `0.35` | At what point does the match algorithm give up (0.0 = perfect match, 1.0 = match anything) |
+| `keys` | `string[]` | `['title', 'subtitle']` | Keys to search in |
+| `ignoreLocation` | `boolean` | `true` | Whether to ignore location of match in string |
+| `minMatchCharLength` | `number` | `1` | Minimum number of characters that must be matched |
+| `findAllMatches` | `boolean` | `false` | When true, matching will continue to the end of a search pattern even if a perfect match has already been located |
+
+See [Fuse.js documentation](https://fusejs.io/api/options.html) for all available options.
+
 ### Custom Filter Function
 
-Implement custom search logic:
+If you need completely custom search logic, you can still provide a custom filter function:
 
 ```javascript
 searchixConfigProvider.setDefaults({
   filterFn: function(query, items) {
-    // Custom fuzzy search with Fuse.js
-    var fuse = new Fuse(items, {
-      keys: ['title', 'subtitle'],
-      threshold: 0.3
+    // Your custom search implementation
+    var q = query.toLowerCase();
+    return items.filter(function(item) {
+      return item.title.toLowerCase().indexOf(q) !== -1;
     });
-    return fuse.search(query).map(function(r) { return r.item; });
   }
 });
 ```
+
+**Note:** When `filterFn` is provided, it will be used instead of the default Fuse.js search.
 
 ### Custom Templates
 
@@ -700,9 +741,3 @@ MIT License
 Based on [ng-searchix](https://github.com/yourusername/ng-searchix) for Angular 2+.
 
 Ported to AngularJS 1.5.8+ for legacy applications.
-
-## Support
-
-- 🐛 [Report Issues](https://github.com/yourusername/ng-searchix-legacy/issues)
-- 📖 [Documentation](https://github.com/yourusername/ng-searchix-legacy)
-- 💬 [Discussions](https://github.com/yourusername/ng-searchix-legacy/discussions)
