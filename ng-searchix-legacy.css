@@ -328,14 +328,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--searchix-item-delete-size, 32px);
-  height: var(--searchix-item-delete-size, 32px);
+  width: var(--searchix-item-delete-size, 28px);
+  height: var(--searchix-item-delete-size, 28px);
   border-radius: var(--searchix-item-delete-radius, 6px);
   background: var(--searchix-item-delete-bg, transparent);
   color: var(--searchix-item-delete-color, rgba(239, 68, 68, 0.6));
   border: 0;
   cursor: pointer;
-  opacity: 0.3;
+  opacity: 0;
   transition: all 0.15s ease;
   padding: 0;
 }
@@ -363,12 +363,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--searchix-item-external-size, 32px);
-  height: var(--searchix-item-external-size, 32px);
+  width: var(--searchix-item-external-size, 28px);
+  height: var(--searchix-item-external-size, 28px);
   border-radius: var(--searchix-item-external-radius, 6px);
   background: var(--searchix-item-external-bg, rgba(0, 0, 0, 0.04));
   color: var(--searchix-item-external-color, rgba(0, 0, 0, 0.5));
-  opacity: 0.3;
+  opacity: 0;
   transition: all 0.15s ease;
   text-decoration: none;
 }
