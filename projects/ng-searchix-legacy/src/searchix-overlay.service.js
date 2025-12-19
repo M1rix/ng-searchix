@@ -189,12 +189,6 @@
       $ctrl.recents = loadRecents();
       // Initialize results with empty search
       $ctrl.results = filter('');
-
-      // Debug logging
-      console.log('[searchix] Initialized with items:', $ctrl.items);
-      console.log('[searchix] Recents:', $ctrl.recents);
-      console.log('[searchix] Items with href:', $ctrl.items.filter(function(it) { return it.href; }));
-      console.log('[searchix] Recents with href:', $ctrl.recents.filter(function(it) { return it.href; }));
     }
 
     function onQueryChange() {
@@ -236,26 +230,6 @@
     function select(item) {
       // Add selected item to recents
       addToRecents(item);
-
-      // Default navigation behavior if href exists and autoNavigate is enabled
-      if (item.href && $ctrl.config.autoNavigate !== false) {
-        var href = item.href;
-        var hasProtocol = /^[a-z][a-z0-9+.-]*:/i.test(href);
-
-        if (hasProtocol) {
-          // External link - open in new tab
-          console.log('[searchix] Opening external link:', href);
-          window.open(href, '_target', 'noopener,noreferrer');
-        } else {
-          // Internal route - navigate using window.location
-          // For AngularJS apps with hash routing, this will work with routes like "/dashboard" or "#/dashboard"
-          if (href.charAt(0) !== '#' && href.charAt(0) !== '/') {
-            href = '#/' + href;
-          }
-          console.log('[searchix] Navigating to internal route:', href);
-          window.location.href = href;
-        }
-      }
 
       // Call user callback
       if ($scope.onSelect) {

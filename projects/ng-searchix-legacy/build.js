@@ -56,7 +56,7 @@ if (fs.existsSync(dtsPath)) {
 // Create package.json for dist
 const packageJson = {
   name: 'ng-searchix-legacy',
-  version: '1.0.8',
+  version: '1.0.9',
   description: 'Advanced search interface component for AngularJS 1.5.8+ with keyboard shortcuts and fuzzy search',
   main: 'ng-searchix-legacy.js',
   types: 'ng-searchix-legacy.d.ts',

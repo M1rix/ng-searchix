@@ -154,24 +154,24 @@
 
             '        <div class="searchix__item-actions">',
 
-            '          <button type="button" class="searchix__item-delete"',
-            '                  ng-if="$ctrl.isShowingRecents"',
+            '          <div class="searchix__item-delete"',
+            '                  ng-show="$ctrl.isShowingRecents"',
             '                  title="Remove from recents"',
             '                  ng-click="$ctrl.removeRecent($event, item)">',
-            '            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
+            '            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
             '                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
             '              <line x1="18" y1="6" x2="6" y2="18"></line>',
             '              <line x1="6" y1="6" x2="18" y2="18"></line>',
             '            </svg>',
-            '          </button>',
+            '          </div>',
 
-            '          <a ng-if="item.href" class="searchix__item-external"',
+            '          <a ng-show="item.href" class="searchix__item-external"',
             '             ng-href="{{ item.href }}"',
             '             target="_blank"',
             '             rel="noopener noreferrer"',
             '             ng-click="$ctrl.openExternal($event, item)"',
             '             title="Open in new tab">',
-            '            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
+            '            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
             '                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
             '              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>',
             '              <polyline points="15 3 21 3 21 9"></polyline>',
@@ -409,12 +409,6 @@
       $ctrl.recents = loadRecents();
       // Initialize results with empty search
       $ctrl.results = filter('');
-
-      // Debug logging
-      console.log('[searchix] Initialized with items:', $ctrl.items);
-      console.log('[searchix] Recents:', $ctrl.recents);
-      console.log('[searchix] Items with href:', $ctrl.items.filter(function(it) { return it.href; }));
-      console.log('[searchix] Recents with href:', $ctrl.recents.filter(function(it) { return it.href; }));
     }
 
     function onQueryChange() {
@@ -456,26 +450,6 @@
     function select(item) {
       // Add selected item to recents
       addToRecents(item);
-
-      // Default navigation behavior if href exists and autoNavigate is enabled
-      if (item.href && $ctrl.config.autoNavigate !== false) {
-        var href = item.href;
-        var hasProtocol = /^[a-z][a-z0-9+.-]*:/i.test(href);
-
-        if (hasProtocol) {
-          // External link - open in new tab
-          console.log('[searchix] Opening external link:', href);
-          window.open(href, '_target', 'noopener,noreferrer');
-        } else {
-          // Internal route - navigate using window.location
-          // For AngularJS apps with hash routing, this will work with routes like "/dashboard" or "#/dashboard"
-          if (href.charAt(0) !== '#' && href.charAt(0) !== '/') {
-            href = '#/' + href;
-          }
-          console.log('[searchix] Navigating to internal route:', href);
-          window.location.href = href;
-        }
-      }
 
       // Call user callback
       if ($scope.onSelect) {
