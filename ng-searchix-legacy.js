@@ -219,6 +219,50 @@
 
 
 /**
+ * Searchix Fuse Filter - Creates fuzzy search filter using Fuse.js
+ */
+
+(function(angular, Fuse) {
+  'use strict';
+
+  createFuseFilterFactory.$inject = [];
+
+  function createFuseFilterFactory() {
+    return function createFuseFilter(options) {
+      var fuse = null;
+
+      return function filter(query, items) {
+        if (!query) return items;
+
+        // Reinitialize fuse if items changed
+        if (!fuse || fuse.getIndex().toJSON().records.length !== items.length) {
+          var defaultOptions = {
+            keys: ['title', 'subtitle'],
+            threshold: 0.35,
+            ignoreLocation: true
+          };
+
+          // Merge user options with defaults
+          var fuseOptions = angular.extend({}, defaultOptions, options || {});
+          fuse = new Fuse(items, fuseOptions);
+        }
+
+        return fuse.search(query).map(function(result) {
+          return result.item;
+        });
+      };
+    };
+  }
+
+  // Register factory
+  angular
+    .module('ngSearchixLegacy')
+    .factory('createFuseFilter', createFuseFilterFactory);
+
+})(window.angular, window.Fuse);
+
+
+/**
  * Searchix Overlay Service - Manages modal overlay
  */
 
@@ -358,9 +402,9 @@
   /**
    * Dialog Controller
    */
-  SearchixDialogController.$inject = ['$scope', '$timeout'];
+  SearchixDialogController.$inject = ['$scope', '$timeout', 'createFuseFilter'];
 
-  function SearchixDialogController($scope, $timeout) {
+  function SearchixDialogController($scope, $timeout, createFuseFilter) {
     var $ctrl = this;
 
     // State
@@ -371,6 +415,9 @@
     $ctrl.searchMs = 0;
     $ctrl.items = $scope.items || [];
     $ctrl.config = $scope.config || {};
+
+    // Initialize fuse filter with custom options if provided
+    var fuseFilter = createFuseFilter($ctrl.config.fuseOptions);
 
     // Computed properties
     Object.defineProperty($ctrl, 'isShowingRecents', {
@@ -551,7 +598,7 @@
 
     function filter(q) {
       var start = performance.now();
-      var query = (q || '').trim().toLowerCase();
+      var query = (q || '').trim();
       var items = $ctrl.items || [];
       var max = $ctrl.config.maxResults || 50;
 
@@ -569,12 +616,8 @@
         return items.slice(0, max);
       }
 
-      // Simple contains matching
-      var filtered = items.filter(function(it) {
-        var title = (it.title || '').toLowerCase();
-        var subtitle = (it.subtitle || '').toLowerCase();
-        return title.indexOf(query) !== -1 || subtitle.indexOf(query) !== -1;
-      });
+      // Use Fuse.js for fuzzy search
+      var filtered = fuseFilter(query, items);
 
       $ctrl.searchMs = Math.round(performance.now() - start);
       return filtered.slice(0, max);
