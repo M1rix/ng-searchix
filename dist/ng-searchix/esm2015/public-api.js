@@ -1,9 +1,0 @@
-/*
- * Public API Surface of ng-searchix
- */
-export * from './lib/models';
-export * from './lib/tokens';
-export * from './lib/ng-searchix.module';
-export * from './lib/searchix.component';
-export * from './lib/searchix-fuse.filter';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3Byb2plY3RzL25nLXNlYXJjaGl4L3NyYy9wdWJsaWMtYXBpLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxjQUFjLENBQUM7QUFDN0IsY0FBYyxjQUFjLENBQUM7QUFDN0IsY0FBYywwQkFBMEIsQ0FBQztBQUN6QyxjQUFjLDBCQUEwQixDQUFDO0FBQ3pDLGNBQWMsNEJBQTRCLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKlxuICogUHVibGljIEFQSSBTdXJmYWNlIG9mIG5nLXNlYXJjaGl4XG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9saWIvbW9kZWxzJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3Rva2Vucyc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9uZy1zZWFyY2hpeC5tb2R1bGUnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvc2VhcmNoaXguY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3NlYXJjaGl4LWZ1c2UuZmlsdGVyJztcbiJdfQ==

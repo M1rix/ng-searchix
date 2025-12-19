@@ -189,6 +189,12 @@
       $ctrl.recents = loadRecents();
       // Initialize results with empty search
       $ctrl.results = filter('');
+
+      // Debug logging
+      console.log('[searchix] Initialized with items:', $ctrl.items);
+      console.log('[searchix] Recents:', $ctrl.recents);
+      console.log('[searchix] Items with href:', $ctrl.items.filter(function(it) { return it.href; }));
+      console.log('[searchix] Recents with href:', $ctrl.recents.filter(function(it) { return it.href; }));
     }
 
     function onQueryChange() {

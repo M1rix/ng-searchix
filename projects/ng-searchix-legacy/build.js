@@ -56,7 +56,7 @@ if (fs.existsSync(dtsPath)) {
 // Create package.json for dist
 const packageJson = {
   name: 'ng-searchix-legacy',
-  version: '1.0.5',
+  version: '1.0.8',
   description: 'Advanced search interface component for AngularJS 1.5.8+ with keyboard shortcuts and fuzzy search',
   main: 'ng-searchix-legacy.js',
   types: 'ng-searchix-legacy.d.ts',
@@ -94,6 +94,23 @@ if (fs.existsSync(bowerPath)) {
   fs.copyFileSync(bowerPath, bowerOutputPath);
 }
 
+// Copy and update example.html
+const examplePath = path.join(__dirname, 'example.html');
+const exampleOutputPath = path.join(distDir, 'example.html');
+if (fs.existsSync(examplePath)) {
+  let exampleContent = fs.readFileSync(examplePath, 'utf8');
+  // Update paths to be relative to dist directory
+  exampleContent = exampleContent.replace(
+    /href="\.\.\/\.\.\/dist\/ng-searchix-legacy\/ng-searchix-legacy\.css"/g,
+    'href="ng-searchix-legacy.css"'
+  );
+  exampleContent = exampleContent.replace(
+    /src="\.\.\/\.\.\/dist\/ng-searchix-legacy\/ng-searchix-legacy\.js"/g,
+    'src="ng-searchix-legacy.js"'
+  );
+  fs.writeFileSync(exampleOutputPath, exampleContent, 'utf8');
+}
+
 console.log('Build complete!');
 console.log('- ' + outputPath);
 console.log('- ' + cssOutputPath);
@@ -102,3 +119,4 @@ console.log('- ' + packageJsonPath);
 console.log('- ' + readmeOutputPath);
 console.log('- ' + licenseOutputPath);
 console.log('- ' + bowerOutputPath);
+console.log('- ' + exampleOutputPath);

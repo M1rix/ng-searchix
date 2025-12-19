@@ -191,7 +191,9 @@
       <p>• Click the search button above</p>
       <p>• Or press <code>Ctrl+K</code> (Windows/Linux) or <code>Cmd+K</code> (Mac)</p>
       <p>• When search is empty, you'll see <strong>Recent items</strong></p>
-      <p>• Hover over recent items to see the <strong>delete button (×)</strong></p>
+      <p>• Hover over items to see <strong>action buttons</strong>:</p>
+      <p>&nbsp;&nbsp;- <strong>Delete button (×)</strong> for recent items</p>
+      <p>&nbsp;&nbsp;- <strong>External link button (↗)</strong> for items with href</p>
       <p>• Type to filter results</p>
       <p>• Use <code>↑</code> <code>↓</code> to navigate</p>
       <p>• Press <code>Enter</code> to select</p>
@@ -312,22 +314,25 @@
       // Recent items (optional - if not provided, will load from localStorage)
       vm.recentItems = [
         {
-          id: '1',
-          title: 'Getting Started',
-          subtitle: 'Learn how to install and use ng-searchix-legacy',
-          icon: 'rocket'
+          id: '8',
+          title: 'GitHub Repository',
+          subtitle: 'View source code and contribute',
+          icon: 'github',
+          href: 'https://github.com/yourusername/ng-searchix-legacy'
         },
         {
-          id: '5',
-          title: 'Theming',
-          subtitle: 'Customize appearance with CSS variables',
-          icon: 'palette'
+          id: '9',
+          title: 'Issue Tracker',
+          subtitle: 'Report bugs and request features',
+          icon: 'bug',
+          href: 'https://github.com/yourusername/ng-searchix-legacy/issues'
         },
         {
-          id: '7',
-          title: 'Examples',
-          subtitle: 'Code examples and demos',
-          icon: 'code'
+          id: '10',
+          title: 'AngularJS Documentation',
+          subtitle: 'Official AngularJS docs',
+          icon: 'angular',
+          href: 'https://docs.angularjs.org'
         }
       ];
 

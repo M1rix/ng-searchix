@@ -335,9 +335,13 @@
   color: var(--searchix-item-delete-color, rgba(239, 68, 68, 0.6));
   border: 0;
   cursor: pointer;
-  opacity: 0;
+  opacity: 0.3;
   transition: all 0.15s ease;
   padding: 0;
+}
+
+.searchix__item-delete.ng-hide {
+  display: none !important;
 }
 
 .searchix__item:hover .searchix__item-delete,
@@ -364,9 +368,13 @@
   border-radius: var(--searchix-item-external-radius, 6px);
   background: var(--searchix-item-external-bg, rgba(0, 0, 0, 0.04));
   color: var(--searchix-item-external-color, rgba(0, 0, 0, 0.5));
-  opacity: 0;
+  opacity: 0.3;
   transition: all 0.15s ease;
   text-decoration: none;
+}
+
+.searchix__item-external.ng-hide {
+  display: none !important;
 }
 
 .searchix__item:hover .searchix__item-external,
