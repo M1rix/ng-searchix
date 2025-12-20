@@ -42,10 +42,13 @@ Or add to your `bower.json`:
 ### CDN
 
 ```html
-<!-- CSS -->
+<!-- Fuse.js (required) -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
+<!-- ng-searchix-legacy CSS -->
 <link rel="stylesheet" href="https://unpkg.com/ng-searchix-legacy@1.0.0/ng-searchix-legacy.css">
 
-<!-- JavaScript -->
+<!-- ng-searchix-legacy JavaScript -->
 <script src="https://unpkg.com/ng-searchix-legacy@1.0.0/ng-searchix-legacy.js"></script>
 ```
 
@@ -63,10 +66,15 @@ Download the files from `dist/` folder:
 <!-- AngularJS 1.5.8+ -->
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 
+<!-- Fuse.js (required for fuzzy search) -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
 <!-- ng-searchix-legacy -->
 <link rel="stylesheet" href="node_modules/ng-searchix-legacy/dist/ng-searchix-legacy.css">
 <script src="node_modules/ng-searchix-legacy/dist/ng-searchix-legacy.js"></script>
 ```
+
+> **Note:** Fuse.js is required for fuzzy search functionality. If not included, the library will fall back to simple contains matching.
 
 ### 2. Add Module Dependency
 
@@ -420,6 +428,9 @@ bower install ng-searchix-legacy --save
   <!-- AngularJS -->
   <script src="bower_components/angular/angular.min.js"></script>
 
+  <!-- Fuse.js (required for fuzzy search) -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
   <!-- ng-searchix-legacy CSS -->
   <link rel="stylesheet" href="bower_components/ng-searchix-legacy/ng-searchix-legacy.css">
 
@@ -660,6 +671,9 @@ my-project/
     items="$ctrl.searchItems"
     on-item-selected="$ctrl.onSelect($item)"
   ></ngx-searchix>
+
+  <!-- Fuse.js (required for fuzzy search) -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
 
   <!-- Vendor JS (includes Angular + ng-searchix-legacy) -->
   <script src="js/vendor.min.js"></script>
