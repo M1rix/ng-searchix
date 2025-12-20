@@ -1,6 +1,6 @@
 {
   "name": "ng-searchix-legacy",
-  "version": "1.0.9",
+  "version": "1.1.4",
   "description": "Advanced search interface component for AngularJS 1.5.8+ with keyboard shortcuts and fuzzy search",
   "main": "../../dist/ng-searchix-legacy/ng-searchix-legacy.js",
   "types": "src/ng-searchix-legacy.d.ts",
@@ -21,7 +21,7 @@
     "angular": "^1.5.8"
   },
   "dependencies": {
-    "fuse.js": "^7.1.0"
+    "fuse.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/angular": "^1.8.0"

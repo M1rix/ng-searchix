@@ -17,6 +17,7 @@ if (!fs.existsSync(distDir)) {
 // Files in order
 const sourceFiles = [
   'ng-searchix-legacy.module.js',
+  'searchix-fuse.filter.js',
   'searchix-overlay.service.js',
   'searchix-dialog.directive.js',
   'searchix.component.js'
@@ -56,7 +57,7 @@ if (fs.existsSync(dtsPath)) {
 // Create package.json for dist
 const packageJson = {
   name: 'ng-searchix-legacy',
-  version: '1.1.0',
+  version: '1.1.4',
   description: 'Advanced search interface component for AngularJS 1.5.8+ with keyboard shortcuts and fuzzy search',
   main: 'ng-searchix-legacy.js',
   types: 'ng-searchix-legacy.d.ts',
@@ -67,7 +68,7 @@ const packageJson = {
     angular: '^1.5.8'
   },
   dependencies: {
-    'fuse.js': '^7.1.0'
+    'fuse.js': '^7.0.0'
   }
 };
 const packageJsonPath = path.join(distDir, 'package.json');

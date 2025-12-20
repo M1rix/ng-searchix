@@ -42,10 +42,13 @@ Or add to your `bower.json`:
 ### CDN
 
 ```html
-<!-- CSS -->
+<!-- Fuse.js (required) -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
+<!-- ng-searchix-legacy CSS -->
 <link rel="stylesheet" href="https://unpkg.com/ng-searchix-legacy@1.0.0/ng-searchix-legacy.css">
 
-<!-- JavaScript -->
+<!-- ng-searchix-legacy JavaScript -->
 <script src="https://unpkg.com/ng-searchix-legacy@1.0.0/ng-searchix-legacy.js"></script>
 ```
 
@@ -63,10 +66,15 @@ Download the files from `dist/` folder:
 <!-- AngularJS 1.5.8+ -->
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
 
+<!-- Fuse.js (required for fuzzy search) -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
 <!-- ng-searchix-legacy -->
 <link rel="stylesheet" href="node_modules/ng-searchix-legacy/dist/ng-searchix-legacy.css">
 <script src="node_modules/ng-searchix-legacy/dist/ng-searchix-legacy.js"></script>
 ```
+
+> **Note:** Fuse.js is required for fuzzy search functionality. If not included, the library will fall back to simple contains matching.
 
 ### 2. Add Module Dependency
 
@@ -233,22 +241,63 @@ Override CSS variables to customize appearance:
 }
 ```
 
+### Fuzzy Search with Fuse.js
+
+ng-searchix-legacy now uses **Fuse.js** for fuzzy search by default. You can customize the search behavior by passing Fuse.js options:
+
+```javascript
+// Configure Fuse.js options globally
+searchixConfigProvider.setDefaults({
+  fuseOptions: {
+    keys: ['title', 'subtitle'],
+    threshold: 0.3,        // 0.0 = exact match, 1.0 = match anything
+    ignoreLocation: true,  // Search entire string
+    minMatchCharLength: 2
+  }
+});
+```
+
+Or pass options to individual components:
+
+```html
+<ngx-searchix
+  items="$ctrl.items"
+  config="{ fuseOptions: { threshold: 0.2 } }"
+  on-item-selected="$ctrl.handleSelect($item)"
+></ngx-searchix>
+```
+
+#### Fuse.js Options Reference
+
+Common options you can configure:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `threshold` | `number` | `0.35` | At what point does the match algorithm give up (0.0 = perfect match, 1.0 = match anything) |
+| `keys` | `string[]` | `['title', 'subtitle']` | Keys to search in |
+| `ignoreLocation` | `boolean` | `true` | Whether to ignore location of match in string |
+| `minMatchCharLength` | `number` | `1` | Minimum number of characters that must be matched |
+| `findAllMatches` | `boolean` | `false` | When true, matching will continue to the end of a search pattern even if a perfect match has already been located |
+
+See [Fuse.js documentation](https://fusejs.io/api/options.html) for all available options.
+
 ### Custom Filter Function
 
-Implement custom search logic:
+If you need completely custom search logic, you can still provide a custom filter function:
 
 ```javascript
 searchixConfigProvider.setDefaults({
   filterFn: function(query, items) {
-    // Custom fuzzy search with Fuse.js
-    var fuse = new Fuse(items, {
-      keys: ['title', 'subtitle'],
-      threshold: 0.3
+    // Your custom search implementation
+    var q = query.toLowerCase();
+    return items.filter(function(item) {
+      return item.title.toLowerCase().indexOf(q) !== -1;
     });
-    return fuse.search(query).map(function(r) { return r.item; });
   }
 });
 ```
+
+**Note:** When `filterFn` is provided, it will be used instead of the default Fuse.js search.
 
 ### Custom Templates
 
@@ -378,6 +427,9 @@ bower install ng-searchix-legacy --save
 <head>
   <!-- AngularJS -->
   <script src="bower_components/angular/angular.min.js"></script>
+
+  <!-- Fuse.js (required for fuzzy search) -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
 
   <!-- ng-searchix-legacy CSS -->
   <link rel="stylesheet" href="bower_components/ng-searchix-legacy/ng-searchix-legacy.css">
@@ -619,6 +671,9 @@ my-project/
     items="$ctrl.searchItems"
     on-item-selected="$ctrl.onSelect($item)"
   ></ngx-searchix>
+
+  <!-- Fuse.js (required for fuzzy search) -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
 
   <!-- Vendor JS (includes Angular + ng-searchix-legacy) -->
   <script src="js/vendor.min.js"></script>
