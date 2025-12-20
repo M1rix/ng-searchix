@@ -741,3 +741,9 @@ MIT License
 Based on [ng-searchix](https://github.com/yourusername/ng-searchix) for Angular 2+.
 
 Ported to AngularJS 1.5.8+ for legacy applications.
+
+## Support
+
+- 🐛 [Report Issues](https://github.com/yourusername/ng-searchix-legacy/issues)
+- 📖 [Documentation](https://github.com/yourusername/ng-searchix-legacy)
+- 💬 [Discussions](https://github.com/yourusername/ng-searchix-legacy/discussions)
