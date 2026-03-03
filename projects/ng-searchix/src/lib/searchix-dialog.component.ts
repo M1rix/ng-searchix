@@ -47,6 +47,7 @@ export class SearchixDialogComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        this.debugLog("DialogData", this.data);
         setTimeout(() => (window.document.getElementById('searchix-input')?.focus()));
     }
 
@@ -90,8 +91,7 @@ export class SearchixDialogComponent implements AfterViewInit {
 
     openExternal(event: Event, item: SearchItem): void {
         event.stopPropagation();
-        // Link will open naturally via href
-        // Optionally emit selection event
+        this.debugLog("Open external link", item);
         if (this.data.config.emitOnExternalOpen) {
             this.data.selection$.next(item);
         }
@@ -101,6 +101,7 @@ export class SearchixDialogComponent implements AfterViewInit {
     onKeydown(e: KeyboardEvent): void {
         // Handle keyboard navigation for both recents and search results
         if (e.key === 'ArrowDown') {
+            this.debugLog("Start", "Navigation ⬇️ Down");
             e.preventDefault();
             this.activeIndex = Math.min(this.activeIndex + 1, Math.max(0, this.displayItems.length - 1));
             window.document.querySelector(`#searchix__item-${this.activeIndex}`)?.scrollIntoView({
@@ -108,7 +109,9 @@ export class SearchixDialogComponent implements AfterViewInit {
                 inline: 'nearest',
                 behavior: 'smooth'
             });
+            this.debugLog("End", "Navigation ⬇️ Down");
         } else if (e.key === 'ArrowUp') {
+            this.debugLog("Start", "Navigation ⬆️ Up");
             e.preventDefault();
             this.activeIndex = Math.max(this.activeIndex - 1, 0);
             window.document.querySelector(`#searchix__item-${this.activeIndex}`)?.scrollIntoView({
@@ -116,16 +119,22 @@ export class SearchixDialogComponent implements AfterViewInit {
                 inline: 'nearest',
                 behavior: 'smooth'
             });
+            this.debugLog("End", "Navigation ⬆️ Up");
         } else if (e.key === 'Enter') {
+            this.debugLog("Start", "Navigation into item");
             const item = this.displayItems[this.activeIndex];
             if (item) {
                 e.preventDefault();
+                this.debugLog("Around", "Navigation into item", item);
                 this.select(item);
             }
+            this.debugLog("End", "Navigation into item");
+
         }
     }
 
     removeRecent(event: Event, item: SearchItem): void {
+        this.debugLog("Remove item from Recents", item);
         event.stopPropagation();
 
         // Remove from recents array
@@ -146,6 +155,7 @@ export class SearchixDialogComponent implements AfterViewInit {
     }
 
     private addToRecents(item: SearchItem): void {
+        this.debugLog("Add item to Recents", item);
         // Remove duplicate if exists
         this.recents = this.recents.filter(it => it.id !== item.id);
 
@@ -171,8 +181,10 @@ export class SearchixDialogComponent implements AfterViewInit {
 
         // Otherwise, load from localStorage
         try {
+            this.debugLog("Recent Items not provided. Trying to load from local storage");
             const stored = localStorage.getItem(SEARCHIX_RECENTS_KEY);
             if (stored) {
+                this.debugLog("Loaded from local storage", JSON.parse(stored));
                 return JSON.parse(stored);
             }
         } catch (e) {
@@ -183,6 +195,7 @@ export class SearchixDialogComponent implements AfterViewInit {
     }
 
     private saveRecentsToLocalStorage(): void {
+        this.debugLog("Save recents to local storage", this.recents);
         try {
             localStorage.setItem(SEARCHIX_RECENTS_KEY, JSON.stringify(this.recents));
         } catch (e) {
@@ -191,22 +204,32 @@ export class SearchixDialogComponent implements AfterViewInit {
     }
 
     private filter(q: string): SearchItem[] {
-        const start = performance.now();
+        let start = 0;
+        if(this.data.config.showMs) {
+            start = performance.now();
+        }
 
         const query = (q || '').trim().toLowerCase();
         const items = this.data.items || [];
         const max = this.data.config.maxResults ?? 50;
+        this.debugLog("Start filter with Query: ", q);
 
         if (this.data.config.filterFn) {
             const filtered = this.data.config.filterFn(query, items) || [];
-            return filtered.slice(0, max);
+            this.endTiming(start);
+            const result = filtered.slice(0, max);
+            this.debugLog("Returned data with FUSE JS", result);
+            return result;
         }
 
         // If query is empty, show recents
         if (!query) {
+            this.debugLog("Query is empty, showing recents");
             if (this.recents.length > 0) {
+                this.endTiming(start);
                 return this.recents.slice(0, max);
             }
+            this.endTiming(start);
             return items.slice(0, max);
         }
 
@@ -218,7 +241,22 @@ export class SearchixDialogComponent implements AfterViewInit {
                 (it.subtitle || '').toLowerCase().includes(query)
             )
             .slice(0, max);
-        this.searchMs = Math.round(performance.now() - start);
+
+        this.endTiming(start);
+        this.debugLog("Return result with JS Arrays.filter() method", result);
         return result;
+    }
+
+    private endTiming(start: number) {
+        if (this.data.config.showMs) {
+            this.searchMs = Math.round(performance.now() - start);
+            this.debugLog("End search timing")
+        }
+    }
+
+    private debugLog(...args: any) {
+        if (this.data.config.debugLogEnabled) {
+            console.debug("[NG-SEARCHIX]:", ...args);
+        }
     }
 }

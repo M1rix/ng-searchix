@@ -34,6 +34,8 @@ export declare class SearchixDialogComponent implements AfterViewInit {
     private loadRecents;
     private saveRecentsToLocalStorage;
     private filter;
+    private endTiming;
+    private debugLog;
     static ɵfac: i0.ɵɵFactoryDeclaration<SearchixDialogComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<SearchixDialogComponent, "ngx-searchix-dialog", never, {}, {}, never, never>;
 }

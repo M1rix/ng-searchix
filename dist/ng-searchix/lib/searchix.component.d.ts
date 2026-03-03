@@ -14,11 +14,13 @@ export declare class SearchixComponent {
     closeOnSelect?: boolean;
     showMs?: boolean;
     showResultsCount?: boolean;
+    emitOnExternalOpen?: boolean;
+    debugLogEnabled?: boolean;
     maxResults?: number;
     iconTemplate?: TemplateRef<any> | null;
     iconRenderer?: TemplateRef<any>;
     buttonTemplate?: TemplateRef<any>;
-    emitOnExternalOpen?: boolean;
+    itemsFilterFn?: (items?: SearchItem[]) => SearchItem[];
     itemSelected: EventEmitter<SearchItem>;
     opened: EventEmitter<void>;
     closed: EventEmitter<void>;
@@ -27,7 +29,8 @@ export declare class SearchixComponent {
     open(): void;
     close(): void;
     onKeyDown(e: KeyboardEvent): void;
+    private debugLog;
     static ɵfac: i0.ɵɵFactoryDeclaration<SearchixComponent, [null, { optional: true; }]>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SearchixComponent, "ngx-searchix", never, { "items": "items"; "recentItems": "recentItems"; "placeholder": "placeholder"; "label": "label"; "hotkey": "hotkey"; "closeOnSelect": "closeOnSelect"; "showMs": "showMs"; "showResultsCount": "showResultsCount"; "maxResults": "maxResults"; "iconTemplate": "iconTemplate"; "iconRenderer": "iconRenderer"; "buttonTemplate": "buttonTemplate"; "emitOnExternalOpen": "emitOnExternalOpen"; }, { "itemSelected": "itemSelected"; "opened": "opened"; "closed": "closed"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SearchixComponent, "ngx-searchix", never, { "items": "items"; "recentItems": "recentItems"; "placeholder": "placeholder"; "label": "label"; "hotkey": "hotkey"; "closeOnSelect": "closeOnSelect"; "showMs": "showMs"; "showResultsCount": "showResultsCount"; "emitOnExternalOpen": "emitOnExternalOpen"; "debugLogEnabled": "debugLogEnabled"; "maxResults": "maxResults"; "iconTemplate": "iconTemplate"; "iconRenderer": "iconRenderer"; "buttonTemplate": "buttonTemplate"; "itemsFilterFn": "itemsFilterFn"; }, { "itemSelected": "itemSelected"; "opened": "opened"; "closed": "closed"; }, never, never>;
 }
 //# sourceMappingURL=searchix.component.d.ts.map

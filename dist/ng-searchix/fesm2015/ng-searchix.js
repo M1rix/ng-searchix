@@ -36,6 +36,7 @@ class SearchixDialogComponent {
         });
     }
     ngAfterViewInit() {
+        this.debugLog("DialogData", this.data);
         setTimeout(() => { var _a; return ((_a = window.document.getElementById('searchix-input')) === null || _a === void 0 ? void 0 : _a.focus()); });
     }
     // Check if we should show recents (when search input is empty)
@@ -70,8 +71,7 @@ class SearchixDialogComponent {
     }
     openExternal(event, item) {
         event.stopPropagation();
-        // Link will open naturally via href
-        // Optionally emit selection event
+        this.debugLog("Open external link", item);
         if (this.data.config.emitOnExternalOpen) {
             this.data.selection$.next(item);
         }
@@ -80,6 +80,7 @@ class SearchixDialogComponent {
         var _a, _b;
         // Handle keyboard navigation for both recents and search results
         if (e.key === 'ArrowDown') {
+            this.debugLog("Start", "Navigation ⬇️ Down");
             e.preventDefault();
             this.activeIndex = Math.min(this.activeIndex + 1, Math.max(0, this.displayItems.length - 1));
             (_a = window.document.querySelector(`#searchix__item-${this.activeIndex}`)) === null || _a === void 0 ? void 0 : _a.scrollIntoView({
@@ -87,8 +88,10 @@ class SearchixDialogComponent {
                 inline: 'nearest',
                 behavior: 'smooth'
             });
+            this.debugLog("End", "Navigation ⬇️ Down");
         }
         else if (e.key === 'ArrowUp') {
+            this.debugLog("Start", "Navigation ⬆️ Up");
             e.preventDefault();
             this.activeIndex = Math.max(this.activeIndex - 1, 0);
             (_b = window.document.querySelector(`#searchix__item-${this.activeIndex}`)) === null || _b === void 0 ? void 0 : _b.scrollIntoView({
@@ -96,16 +99,21 @@ class SearchixDialogComponent {
                 inline: 'nearest',
                 behavior: 'smooth'
             });
+            this.debugLog("End", "Navigation ⬆️ Up");
         }
         else if (e.key === 'Enter') {
+            this.debugLog("Start", "Navigation into item");
             const item = this.displayItems[this.activeIndex];
             if (item) {
                 e.preventDefault();
+                this.debugLog("Around", "Navigation into item", item);
                 this.select(item);
             }
+            this.debugLog("End", "Navigation into item");
         }
     }
     removeRecent(event, item) {
+        this.debugLog("Remove item from Recents", item);
         event.stopPropagation();
         // Remove from recents array
         this.recents = this.recents.filter(it => it.id !== item.id);
@@ -120,6 +128,7 @@ class SearchixDialogComponent {
         this.cdr.markForCheck();
     }
     addToRecents(item) {
+        this.debugLog("Add item to Recents", item);
         // Remove duplicate if exists
         this.recents = this.recents.filter(it => it.id !== item.id);
         // Add to the beginning
@@ -140,8 +149,10 @@ class SearchixDialogComponent {
         }
         // Otherwise, load from localStorage
         try {
+            this.debugLog("Recent Items not provided. Trying to load from local storage");
             const stored = localStorage.getItem(SEARCHIX_RECENTS_KEY);
             if (stored) {
+                this.debugLog("Loaded from local storage", JSON.parse(stored));
                 return JSON.parse(stored);
             }
         }
@@ -151,6 +162,7 @@ class SearchixDialogComponent {
         return [];
     }
     saveRecentsToLocalStorage() {
+        this.debugLog("Save recents to local storage", this.recents);
         try {
             localStorage.setItem(SEARCHIX_RECENTS_KEY, JSON.stringify(this.recents));
         }
@@ -160,19 +172,29 @@ class SearchixDialogComponent {
     }
     filter(q) {
         var _a;
-        const start = performance.now();
+        let start = 0;
+        if (this.data.config.showMs) {
+            start = performance.now();
+        }
         const query = (q || '').trim().toLowerCase();
         const items = this.data.items || [];
         const max = (_a = this.data.config.maxResults) !== null && _a !== void 0 ? _a : 50;
+        this.debugLog("Start filter with Query: ", q);
         if (this.data.config.filterFn) {
             const filtered = this.data.config.filterFn(query, items) || [];
-            return filtered.slice(0, max);
+            this.endTiming(start);
+            const result = filtered.slice(0, max);
+            this.debugLog("Returned data with FUSE JS", result);
+            return result;
         }
         // If query is empty, show recents
         if (!query) {
+            this.debugLog("Query is empty, showing recents");
             if (this.recents.length > 0) {
+                this.endTiming(start);
                 return this.recents.slice(0, max);
             }
+            this.endTiming(start);
             return items.slice(0, max);
         }
         // Simple contains matching (Angular-12 friendly, no extra deps).
@@ -181,8 +203,20 @@ class SearchixDialogComponent {
             .filter(it => (it.title || '').toLowerCase().includes(query) ||
             (it.subtitle || '').toLowerCase().includes(query))
             .slice(0, max);
-        this.searchMs = Math.round(performance.now() - start);
+        this.endTiming(start);
+        this.debugLog("Return result with JS Arrays.filter() method", result);
         return result;
+    }
+    endTiming(start) {
+        if (this.data.config.showMs) {
+            this.searchMs = Math.round(performance.now() - start);
+            this.debugLog("End search timing");
+        }
+    }
+    debugLog(...args) {
+        if (this.data.config.debugLogEnabled) {
+            console.debug("[NG-SEARCHIX]:", ...args);
+        }
     }
 }
 SearchixDialogComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: SearchixDialogComponent, deps: [{ token: SearchixDialogData }, { token: i0.ChangeDetectorRef }], target: i0.ɵɵFactoryTarget.Component });
@@ -299,11 +333,20 @@ class SearchixComponent {
         this.closed = new EventEmitter();
     }
     open() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
-        const config = Object.assign(Object.assign({}, this.defaultConfig), { showMs: (_a = this.showMs) !== null && _a !== void 0 ? _a : (_b = this.defaultConfig) === null || _b === void 0 ? void 0 : _b.showMs, showResultsCount: (_c = this.showResultsCount) !== null && _c !== void 0 ? _c : (_d = this.defaultConfig) === null || _d === void 0 ? void 0 : _d.showResultsCount, label: (_e = this.label) !== null && _e !== void 0 ? _e : (_f = this.defaultConfig) === null || _f === void 0 ? void 0 : _f.label, placeholder: (_g = this.placeholder) !== null && _g !== void 0 ? _g : (_h = this.defaultConfig) === null || _h === void 0 ? void 0 : _h.placeholder, hotkey: (_j = this.hotkey) !== null && _j !== void 0 ? _j : (_k = this.defaultConfig) === null || _k === void 0 ? void 0 : _k.hotkey, closeOnSelect: (_l = this.closeOnSelect) !== null && _l !== void 0 ? _l : (_m = this.defaultConfig) === null || _m === void 0 ? void 0 : _m.closeOnSelect, maxResults: (_o = this.maxResults) !== null && _o !== void 0 ? _o : (_p = this.defaultConfig) === null || _p === void 0 ? void 0 : _p.maxResults, iconRenderer: (_q = this.iconRenderer) !== null && _q !== void 0 ? _q : (_r = this.defaultConfig) === null || _r === void 0 ? void 0 : _r.iconRenderer, emitOnExternalOpen: (_s = this.emitOnExternalOpen) !== null && _s !== void 0 ? _s : (_t = this.defaultConfig) === null || _t === void 0 ? void 0 : _t.emitOnExternalOpen });
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2;
+        const config = Object.assign(Object.assign({}, this.defaultConfig), { placeholder: (_a = this.placeholder) !== null && _a !== void 0 ? _a : (_b = this.defaultConfig) === null || _b === void 0 ? void 0 : _b.placeholder, label: (_c = this.label) !== null && _c !== void 0 ? _c : (_d = this.defaultConfig) === null || _d === void 0 ? void 0 : _d.label, hotkey: (_e = this.hotkey) !== null && _e !== void 0 ? _e : (_f = this.defaultConfig) === null || _f === void 0 ? void 0 : _f.hotkey, closeOnSelect: (_g = this.closeOnSelect) !== null && _g !== void 0 ? _g : (_h = this.defaultConfig) === null || _h === void 0 ? void 0 : _h.closeOnSelect, showMs: (_j = this.showMs) !== null && _j !== void 0 ? _j : (_k = this.defaultConfig) === null || _k === void 0 ? void 0 : _k.showMs, showResultsCount: (_l = this.showResultsCount) !== null && _l !== void 0 ? _l : (_m = this.defaultConfig) === null || _m === void 0 ? void 0 : _m.showResultsCount, emitOnExternalOpen: (_o = this.emitOnExternalOpen) !== null && _o !== void 0 ? _o : (_p = this.defaultConfig) === null || _p === void 0 ? void 0 : _p.emitOnExternalOpen, debugLogEnabled: (_q = this.debugLogEnabled) !== null && _q !== void 0 ? _q : (_r = this.defaultConfig) === null || _r === void 0 ? void 0 : _r.debugLogEnabled, maxResults: (_s = this.maxResults) !== null && _s !== void 0 ? _s : (_t = this.defaultConfig) === null || _t === void 0 ? void 0 : _t.maxResults, iconRenderer: (_u = this.iconRenderer) !== null && _u !== void 0 ? _u : (_v = this.defaultConfig) === null || _v === void 0 ? void 0 : _v.iconRenderer, iconTemplate: (_w = this.iconTemplate) !== null && _w !== void 0 ? _w : (_x = this.defaultConfig) === null || _x === void 0 ? void 0 : _x.iconTemplate, buttonTemplate: (_y = this.buttonTemplate) !== null && _y !== void 0 ? _y : (_z = this.defaultConfig) === null || _z === void 0 ? void 0 : _z.buttonTemplate });
+        this.debugLog("Open fired with config ", config);
         this.opened.emit();
-        (_u = this.sub) === null || _u === void 0 ? void 0 : _u.unsubscribe();
-        this.sub = this.overlaySvc.open(this.items, config, this.recentItems).subscribe({
+        (_0 = this.sub) === null || _0 === void 0 ? void 0 : _0.unsubscribe();
+        let items = [];
+        let recentItems = [];
+        if (this.itemsFilterFn) {
+            items = this.itemsFilterFn(this.items);
+            recentItems = this.itemsFilterFn((_1 = this.recentItems) !== null && _1 !== void 0 ? _1 : JSON.parse((_2 = window.localStorage.getItem(SEARCHIX_RECENTS_KEY)) !== null && _2 !== void 0 ? _2 : '[]'));
+        }
+        this.debugLog("SearchItems", items);
+        this.debugLog("RecentItems", recentItems);
+        this.sub = this.overlaySvc.open(items, config, recentItems).subscribe({
             next: (it) => this.itemSelected.emit(it),
             complete: () => {
                 this.closed.emit();
@@ -312,6 +355,7 @@ class SearchixComponent {
     }
     close() {
         var _a;
+        this.debugLog("Close fired");
         (_a = this.sub) === null || _a === void 0 ? void 0 : _a.unsubscribe();
         this.overlaySvc.close();
         this.closed.emit();
@@ -325,6 +369,7 @@ class SearchixComponent {
         const key = hk.split(connector).pop();
         const pressedCtrl = e.ctrlKey;
         const pressedCmd = e.metaKey;
+        this.debugLog("Pressed key: " + e.code);
         const modOk = (wantCtrl && pressedCtrl) || (wantCmd && pressedCmd) || (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
         if (modOk && key && e.code.toLowerCase() === 'key' + key) {
             e.preventDefault();
@@ -334,9 +379,14 @@ class SearchixComponent {
                 this.open();
         }
     }
+    debugLog(...args) {
+        if (this.debugLogEnabled) {
+            console.debug("[NG-SEARCHIX]:", ...args);
+        }
+    }
 }
 SearchixComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: SearchixComponent, deps: [{ token: SearchixOverlayService }, { token: SEARCHIX_CONFIG, optional: true }], target: i0.ɵɵFactoryTarget.Component });
-SearchixComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: SearchixComponent, selector: "ngx-searchix", inputs: { items: "items", recentItems: "recentItems", placeholder: "placeholder", label: "label", hotkey: "hotkey", closeOnSelect: "closeOnSelect", showMs: "showMs", showResultsCount: "showResultsCount", maxResults: "maxResults", iconTemplate: "iconTemplate", iconRenderer: "iconRenderer", buttonTemplate: "buttonTemplate", emitOnExternalOpen: "emitOnExternalOpen" }, outputs: { itemSelected: "itemSelected", opened: "opened", closed: "closed" }, host: { listeners: { "document:keydown": "onKeyDown($event)" } }, ngImport: i0, template: "<ng-container *ngIf=\"buttonTemplate; else defaultButton\">\r\n  <ng-container *ngTemplateOutlet=\"buttonTemplate; context: { $implicit: { open: open.bind(this), hotkey: hotkey || defaultConfig?.hotkey || 'Ctrl+K' } }\"></ng-container>\r\n</ng-container>\r\n\r\n<ng-template #defaultButton>\r\n  <button type=\"button\" class=\"ngx-searchix-trigger\" (click)=\"open()\">\r\n    <ng-container *ngIf=\"iconTemplate; else defaultSearchIcon\">\r\n      <ng-container *ngTemplateOutlet=\"iconTemplate\"></ng-container>\r\n    </ng-container>\r\n    <ng-template #defaultSearchIcon>\r\n      <svg class=\"ngx-searchix-icon\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\r\n        <circle cx=\"11\" cy=\"11\" r=\"8\"></circle>\r\n        <path d=\"m21 21-4.35-4.35\"></path>\r\n      </svg>\r\n    </ng-template>\r\n    <span class=\"ngx-searchix-label\">{{ (label || 'Lookup') }}</span>\r\n    <code class=\"ngx-searchix-hint\">{{ (hotkey || defaultConfig?.hotkey || 'Ctrl+K') }}</code>\r\n  </button>\r\n</ng-template>\r\n", styles: [".ngx-searchix-trigger{display:inline-flex;align-items:center;grid-gap:var(--searchix-trigger-gap, 10px);gap:var(--searchix-trigger-gap, 10px);border-radius:var(--searchix-trigger-radius, 8px);padding:var(--searchix-trigger-py, 8px) var(--searchix-trigger-px, 12px);border:1px solid var(--searchix-trigger-border, rgba(0, 0, 0, .12));background:var(--searchix-trigger-bg, #ffffff);color:var(--searchix-trigger-color, inherit);cursor:pointer;font-family:var(--searchix-font, system-ui, -apple-system, sans-serif);font-size:var(--searchix-trigger-font-size, 14px);transition:all .15s ease;box-shadow:var(--searchix-trigger-shadow, 0 1px 2px rgba(0, 0, 0, .05))}.ngx-searchix-trigger:hover{background:var(--searchix-trigger-bg-hover, #f9fafb);border-color:var(--searchix-trigger-border-hover, rgba(0, 0, 0, .2));box-shadow:var(--searchix-trigger-shadow-hover, 0 2px 4px rgba(0, 0, 0, .08))}.ngx-searchix-trigger:focus{outline:2px solid var(--searchix-trigger-outline, rgba(59, 130, 246, .5));outline-offset:2px}.ngx-searchix-icon{opacity:var(--searchix-trigger-icon-opacity, .6);flex-shrink:0}.ngx-searchix-label{color:var(--searchix-trigger-label-color, inherit);font-weight:var(--searchix-trigger-label-weight, 400)}.ngx-searchix-hint{font-size:var(--searchix-trigger-hint-font, 12px);opacity:var(--searchix-trigger-hint-opacity, .6);padding:var(--searchix-trigger-hint-py, 3px) var(--searchix-trigger-hint-px, 6px);border-radius:var(--searchix-trigger-hint-radius, 4px);border:1px solid var(--searchix-trigger-hint-border, rgba(0, 0, 0, .1));background:var(--searchix-trigger-hint-bg, rgba(0, 0, 0, .04));font-family:var(--searchix-trigger-hint-font-family, ui-monospace, monospace);font-style:normal;font-weight:var(--searchix-trigger-hint-weight, 500);line-height:1}\n"], directives: [{ type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { type: i2.NgTemplateOutlet, selector: "[ngTemplateOutlet]", inputs: ["ngTemplateOutletContext", "ngTemplateOutlet"] }] });
+SearchixComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "12.2.17", type: SearchixComponent, selector: "ngx-searchix", inputs: { items: "items", recentItems: "recentItems", placeholder: "placeholder", label: "label", hotkey: "hotkey", closeOnSelect: "closeOnSelect", showMs: "showMs", showResultsCount: "showResultsCount", emitOnExternalOpen: "emitOnExternalOpen", debugLogEnabled: "debugLogEnabled", maxResults: "maxResults", iconTemplate: "iconTemplate", iconRenderer: "iconRenderer", buttonTemplate: "buttonTemplate", itemsFilterFn: "itemsFilterFn" }, outputs: { itemSelected: "itemSelected", opened: "opened", closed: "closed" }, host: { listeners: { "document:keydown": "onKeyDown($event)" } }, ngImport: i0, template: "<ng-container *ngIf=\"buttonTemplate; else defaultButton\">\r\n  <ng-container *ngTemplateOutlet=\"buttonTemplate; context: { $implicit: { open: open.bind(this), hotkey: hotkey || defaultConfig?.hotkey || 'Ctrl+K' } }\"></ng-container>\r\n</ng-container>\r\n\r\n<ng-template #defaultButton>\r\n  <button type=\"button\" class=\"ngx-searchix-trigger\" (click)=\"open()\">\r\n    <ng-container *ngIf=\"iconTemplate; else defaultSearchIcon\">\r\n      <ng-container *ngTemplateOutlet=\"iconTemplate\"></ng-container>\r\n    </ng-container>\r\n    <ng-template #defaultSearchIcon>\r\n      <svg class=\"ngx-searchix-icon\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\r\n        <circle cx=\"11\" cy=\"11\" r=\"8\"></circle>\r\n        <path d=\"m21 21-4.35-4.35\"></path>\r\n      </svg>\r\n    </ng-template>\r\n    <span class=\"ngx-searchix-label\">{{ (label || 'Lookup') }}</span>\r\n    <code class=\"ngx-searchix-hint\">{{ (hotkey || defaultConfig?.hotkey || 'Ctrl+K') }}</code>\r\n  </button>\r\n</ng-template>\r\n", styles: [".ngx-searchix-trigger{display:inline-flex;align-items:center;grid-gap:var(--searchix-trigger-gap, 10px);gap:var(--searchix-trigger-gap, 10px);border-radius:var(--searchix-trigger-radius, 8px);padding:var(--searchix-trigger-py, 8px) var(--searchix-trigger-px, 12px);border:1px solid var(--searchix-trigger-border, rgba(0, 0, 0, .12));background:var(--searchix-trigger-bg, #ffffff);color:var(--searchix-trigger-color, inherit);cursor:pointer;font-family:var(--searchix-font, system-ui, -apple-system, sans-serif);font-size:var(--searchix-trigger-font-size, 14px);transition:all .15s ease;box-shadow:var(--searchix-trigger-shadow, 0 1px 2px rgba(0, 0, 0, .05))}.ngx-searchix-trigger:hover{background:var(--searchix-trigger-bg-hover, #f9fafb);border-color:var(--searchix-trigger-border-hover, rgba(0, 0, 0, .2));box-shadow:var(--searchix-trigger-shadow-hover, 0 2px 4px rgba(0, 0, 0, .08))}.ngx-searchix-trigger:focus{outline:2px solid var(--searchix-trigger-outline, rgba(59, 130, 246, .5));outline-offset:2px}.ngx-searchix-icon{opacity:var(--searchix-trigger-icon-opacity, .6);flex-shrink:0}.ngx-searchix-label{color:var(--searchix-trigger-label-color, inherit);font-weight:var(--searchix-trigger-label-weight, 400)}.ngx-searchix-hint{font-size:var(--searchix-trigger-hint-font, 12px);opacity:var(--searchix-trigger-hint-opacity, .6);padding:var(--searchix-trigger-hint-py, 3px) var(--searchix-trigger-hint-px, 6px);border-radius:var(--searchix-trigger-hint-radius, 4px);border:1px solid var(--searchix-trigger-hint-border, rgba(0, 0, 0, .1));background:var(--searchix-trigger-hint-bg, rgba(0, 0, 0, .04));font-family:var(--searchix-trigger-hint-font-family, ui-monospace, monospace);font-style:normal;font-weight:var(--searchix-trigger-hint-weight, 500);line-height:1}\n"], directives: [{ type: i2.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { type: i2.NgTemplateOutlet, selector: "[ngTemplateOutlet]", inputs: ["ngTemplateOutletContext", "ngTemplateOutlet"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImport: i0, type: SearchixComponent, decorators: [{
             type: Component,
             args: [{
@@ -365,6 +415,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
                 type: Input
             }], showResultsCount: [{
                 type: Input
+            }], emitOnExternalOpen: [{
+                type: Input
+            }], debugLogEnabled: [{
+                type: Input
             }], maxResults: [{
                 type: Input
             }], iconTemplate: [{
@@ -373,7 +427,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "12.2.17", ngImpo
                 type: Input
             }], buttonTemplate: [{
                 type: Input
-            }], emitOnExternalOpen: [{
+            }], itemsFilterFn: [{
                 type: Input
             }], itemSelected: [{
                 type: Output

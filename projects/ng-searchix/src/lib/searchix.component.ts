@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { SearchItem } from './models';
 import { SearchixOverlayService } from './searchix-overlay.service';
-import { SEARCHIX_CONFIG, SearchixConfig } from './tokens';
+import { SEARCHIX_CONFIG, SEARCHIX_RECENTS_KEY, SearchixConfig } from './tokens';
 
 @Component({
   selector: 'ngx-searchix',
@@ -19,12 +19,13 @@ export class SearchixComponent {
   @Input() closeOnSelect?: boolean;
   @Input() showMs?: boolean;
   @Input() showResultsCount?: boolean;
+  @Input() emitOnExternalOpen?: boolean;
+  @Input() debugLogEnabled?: boolean;
   @Input() maxResults?: number;
   @Input() iconTemplate?: TemplateRef<any> | null = null;
   @Input() iconRenderer?: TemplateRef<any>;
   @Input() buttonTemplate?: TemplateRef<any>;
-  @Input() emitOnExternalOpen?: boolean;
-
+  @Input() itemsFilterFn?: (items?: SearchItem[]) => SearchItem[];
   @Output() itemSelected = new EventEmitter<SearchItem>();
   @Output() opened = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
@@ -39,21 +40,36 @@ export class SearchixComponent {
   open(): void {
     const config: SearchixConfig = {
       ...this.defaultConfig,
-      showMs: this.showMs ?? this.defaultConfig?.showMs,
-      showResultsCount: this.showResultsCount ?? this.defaultConfig?.showResultsCount,
-      label: this.label ?? this.defaultConfig?.label,
-      placeholder: this.placeholder ?? this.defaultConfig?.placeholder,
-      hotkey: this.hotkey ?? this.defaultConfig?.hotkey,
-      closeOnSelect: this.closeOnSelect ?? this.defaultConfig?.closeOnSelect,
-      maxResults: this.maxResults ?? this.defaultConfig?.maxResults,
-      iconRenderer: this.iconRenderer ?? this.defaultConfig?.iconRenderer,
-      emitOnExternalOpen: this.emitOnExternalOpen ?? this.defaultConfig?.emitOnExternalOpen,
+        placeholder: this.placeholder ?? this.defaultConfig?.placeholder,
+        label: this.label ?? this.defaultConfig?.label,
+        hotkey: this.hotkey ?? this.defaultConfig?.hotkey,
+        closeOnSelect: this.closeOnSelect ?? this.defaultConfig?.closeOnSelect,
+        showMs: this.showMs ?? this.defaultConfig?.showMs,
+        showResultsCount: this.showResultsCount ?? this.defaultConfig?.showResultsCount,
+        emitOnExternalOpen: this.emitOnExternalOpen ?? this.defaultConfig?.emitOnExternalOpen,
+        debugLogEnabled: this.debugLogEnabled ?? this.defaultConfig?.debugLogEnabled,
+        maxResults: this.maxResults ?? this.defaultConfig?.maxResults,
+        iconRenderer: this.iconRenderer ?? this.defaultConfig?.iconRenderer,
+        iconTemplate: this.iconTemplate ?? this.defaultConfig?.iconTemplate,
+        buttonTemplate: this.buttonTemplate ?? this.defaultConfig?.buttonTemplate,
     };
+
+    this.debugLog("Open fired with config ", config);
 
     this.opened.emit();
 
     this.sub?.unsubscribe();
-    this.sub = this.overlaySvc.open(this.items, config, this.recentItems).subscribe({
+    let items: SearchItem[] = [];
+    let recentItems: SearchItem[] = []
+    if (this.itemsFilterFn) {
+        items = this.itemsFilterFn(this.items);
+        recentItems = this.itemsFilterFn(this.recentItems ?? JSON.parse(window.localStorage.getItem(SEARCHIX_RECENTS_KEY) ?? '[]'));
+    }
+
+    this.debugLog("SearchItems", items);
+    this.debugLog("RecentItems", recentItems);
+
+    this.sub = this.overlaySvc.open(items, config, recentItems).subscribe({
       next: (it) => this.itemSelected.emit(it),
       complete: () => {
         this.closed.emit();
@@ -62,6 +78,7 @@ export class SearchixComponent {
   }
 
   close(): void {
+    this.debugLog("Close fired");
     this.sub?.unsubscribe();
     this.overlaySvc.close();
     this.closed.emit();
@@ -78,11 +95,18 @@ export class SearchixComponent {
     const pressedCtrl = e.ctrlKey;
     const pressedCmd = e.metaKey;
 
+    this.debugLog("Pressed key: " + e.code)
     const modOk = (wantCtrl && pressedCtrl) || (wantCmd && pressedCmd) || (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
       if (modOk && key && e.code.toLowerCase() === 'key' + key) {
           e.preventDefault();
           if (this.overlaySvc.isOpen()) this.close();
           else this.open();
+      }
+  }
+
+  private debugLog(...args: any) {
+      if (this.debugLogEnabled) {
+          console.debug("[NG-SEARCHIX]:", ...args);
       }
   }
 }
