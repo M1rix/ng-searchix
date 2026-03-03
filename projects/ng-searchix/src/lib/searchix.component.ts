@@ -79,10 +79,10 @@ export class SearchixComponent {
     const pressedCmd = e.metaKey;
 
     const modOk = (wantCtrl && pressedCtrl) || (wantCmd && pressedCmd) || (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
-    if (modOk && key && e.key.toLowerCase() === key) {
-      e.preventDefault();
-      if (this.overlaySvc.isOpen()) this.close();
-      else this.open();
-    }
+      if (modOk && key && e.code.toLowerCase() === 'key' + key) {
+          e.preventDefault();
+          if (this.overlaySvc.isOpen()) this.close();
+          else this.open();
+      }
   }
 }
