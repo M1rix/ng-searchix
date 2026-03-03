@@ -20,5 +20,11 @@
     "tslib": "^2.3.0",
     "fuse.js": "^7.1.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "main": "bundles/ng-searchix.umd.js",
+  "module": "fesm2015/ng-searchix.js",
+  "es2015": "fesm2015/ng-searchix.js",
+  "esm2015": "esm2015/ng-searchix.js",
+  "fesm2015": "fesm2015/ng-searchix.js",
+  "typings": "ng-searchix.d.ts"
 }
