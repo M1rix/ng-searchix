@@ -34,7 +34,7 @@ export class SearchixDialogComponent implements AfterViewInit {
         @Inject(SearchixDialogData) public data: SearchixDialogData,
         private cdr: ChangeDetectorRef
     ) {
-        this.metaKey = this.data.config.hotkeyLabel?.startsWith('⌘') ? '⌘' : 'ctrl';
+        this.metaKey = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘' : 'Ctrl';
         // Load recents from input or localStorage
         this.recents = this.loadRecents();
 

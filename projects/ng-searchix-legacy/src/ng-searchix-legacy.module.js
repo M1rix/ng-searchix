@@ -195,9 +195,10 @@
             '               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
             '            <polyline points="6 9 12 15 18 9"></polyline>',
             '          </svg>',
-            '          navigate',
+            '          Navigate',
             '        </kbd>',
-            '        <kbd class="searchix__footer-kbd">↵ select</kbd>',
+            '        <kbd class="searchix__footer-kbd">↵ Open</kbd>',
+            '        <kbd class="searchix__footer-kbd">'+ (/Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘' : 'Ctrl') +' ↵ <small style="background: rgba(0 0 0 / 10%);width: 1px;">&nbsp;</small> New tab</kbd>',
             '      </div>',
             '    </div>',
 
