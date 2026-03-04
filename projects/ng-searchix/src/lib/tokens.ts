@@ -4,6 +4,7 @@ import { SearchItem } from './models';
 export interface SearchixConfig {
   placeholder?: string;
   label?: string; // e.g. "ctrl+k" or "cmd+k"
+  hotkeyLabel?: string; // e.g. "ctrl+k" or "cmd+k"
   hotkey?: string; // e.g. "ctrl+k" or "cmd+k"
   closeOnSelect?: boolean;
   showMs?: boolean;

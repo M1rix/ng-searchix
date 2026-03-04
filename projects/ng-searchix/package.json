@@ -1,6 +1,6 @@
 {
   "name": "ng-searchix",
-  "version": "0.1.43",
+  "version": "0.1.44",
   "description": "Search modal (command palette style) for Angular using CDK Overlay.",
   "keywords": [
     "angular",

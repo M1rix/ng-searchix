@@ -66,7 +66,7 @@
                 class="searchix__item"
                 id="searchix__item-{{i}}"
                 [class.active]="i === activeIndex"
-                (click)="select(it)"
+                (click)="select(it, $event)"
             >
                 <!-- Item Content -->
                 <div class="searchix__item-content">
@@ -190,9 +190,10 @@
                 >
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
-                navigate
+                Navigate
             </kbd>
-            <kbd class="searchix__footer-kbd">↵ select</kbd>
+            <kbd class="searchix__footer-kbd">↵ Open</kbd>
+            <kbd class="searchix__footer-kbd">{{metaKey}} ↵ New tab</kbd>
         </div>
     </div>
 </div>

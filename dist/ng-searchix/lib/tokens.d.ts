@@ -3,6 +3,7 @@ import { SearchItem } from './models';
 export interface SearchixConfig {
     placeholder?: string;
     label?: string;
+    hotkeyLabel?: string;
     hotkey?: string;
     closeOnSelect?: boolean;
     showMs?: boolean;

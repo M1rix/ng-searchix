@@ -14,6 +14,7 @@ export declare class SearchixDialogData {
 export declare class SearchixDialogComponent implements AfterViewInit {
     data: SearchixDialogData;
     private cdr;
+    metaKey: string;
     q: FormControl;
     searchMs: number;
     results: SearchItem[];

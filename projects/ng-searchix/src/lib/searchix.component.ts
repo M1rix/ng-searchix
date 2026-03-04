@@ -15,6 +15,7 @@ export class SearchixComponent {
   @Input() recentItems?: SearchItem[];
   @Input() placeholder?: string;
   @Input() label?: string; // 'Search'
+  @Input() hotkeyLabel?: string; // e.g. '⌘/ctrl K'
   @Input() hotkey?: string; // e.g. 'ctrl+k'
   @Input() closeOnSelect?: boolean;
   @Input() showMs?: boolean;
@@ -86,7 +87,7 @@ export class SearchixComponent {
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(e: KeyboardEvent): void {
-    const hk = (this.hotkey ?? this.defaultConfig?.hotkey ?? 'ctrl+k').toLowerCase();
+    const hk = (this.hotkey ?? this.defaultConfig?.hotkey ?? 'ctrl+k');
     const connector = hk.replace(/\w/gm, '');
     const wantCtrl = hk.includes('ctrl');
     const wantCmd = hk.includes('cmd') || hk.includes('meta');
@@ -97,7 +98,7 @@ export class SearchixComponent {
 
     this.debugLog("Pressed key: " + e.code)
     const modOk = (wantCtrl && pressedCtrl) || (wantCmd && pressedCmd) || (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
-      if (modOk && key && e.code.toLowerCase() === 'key' + key) {
+      if (modOk && key && e.code.toLowerCase() === 'key' + key.toLowerCase()) {
           e.preventDefault();
           if (this.overlaySvc.isOpen()) this.close();
           else this.open();

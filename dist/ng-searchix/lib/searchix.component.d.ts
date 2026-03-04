@@ -10,6 +10,7 @@ export declare class SearchixComponent {
     recentItems?: SearchItem[];
     placeholder?: string;
     label?: string;
+    hotkeyLabel?: string;
     hotkey?: string;
     closeOnSelect?: boolean;
     showMs?: boolean;
@@ -31,6 +32,6 @@ export declare class SearchixComponent {
     onKeyDown(e: KeyboardEvent): void;
     private debugLog;
     static ɵfac: i0.ɵɵFactoryDeclaration<SearchixComponent, [null, { optional: true; }]>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SearchixComponent, "ngx-searchix", never, { "items": "items"; "recentItems": "recentItems"; "placeholder": "placeholder"; "label": "label"; "hotkey": "hotkey"; "closeOnSelect": "closeOnSelect"; "showMs": "showMs"; "showResultsCount": "showResultsCount"; "emitOnExternalOpen": "emitOnExternalOpen"; "debugLogEnabled": "debugLogEnabled"; "maxResults": "maxResults"; "iconTemplate": "iconTemplate"; "iconRenderer": "iconRenderer"; "buttonTemplate": "buttonTemplate"; "itemsFilterFn": "itemsFilterFn"; }, { "itemSelected": "itemSelected"; "opened": "opened"; "closed": "closed"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SearchixComponent, "ngx-searchix", never, { "items": "items"; "recentItems": "recentItems"; "placeholder": "placeholder"; "label": "label"; "hotkeyLabel": "hotkeyLabel"; "hotkey": "hotkey"; "closeOnSelect": "closeOnSelect"; "showMs": "showMs"; "showResultsCount": "showResultsCount"; "emitOnExternalOpen": "emitOnExternalOpen"; "debugLogEnabled": "debugLogEnabled"; "maxResults": "maxResults"; "iconTemplate": "iconTemplate"; "iconRenderer": "iconRenderer"; "buttonTemplate": "buttonTemplate"; "itemsFilterFn": "itemsFilterFn"; }, { "itemSelected": "itemSelected"; "opened": "opened"; "closed": "closed"; }, never, never>;
 }
 //# sourceMappingURL=searchix.component.d.ts.map
