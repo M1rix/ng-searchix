@@ -202,9 +202,10 @@
             '               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">',
             '            <polyline points="6 9 12 15 18 9"></polyline>',
             '          </svg>',
-            '          navigate',
+            '          Navigate',
             '        </kbd>',
-            '        <kbd class="searchix__footer-kbd">↵ select</kbd>',
+            '        <kbd class="searchix__footer-kbd">↵ Open</kbd>',
+            '        <kbd class="searchix__footer-kbd">'+ (/Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘' : 'Ctrl') +' ↵ <small style="background: rgba(0 0 0 / 10%);width: 1px;">&nbsp;</small> New tab</kbd>',
             '      </div>',
             '    </div>',
 
@@ -692,6 +693,7 @@
         recentItems: '<?',       // SearchItem[]
         placeholder: '@?',       // string
         label: '@?',             // string (e.g., 'Search')
+        hotkeyLabel: '<?',      // string (for dynamic hotkey label)
         hotkey: '@?',           // string (e.g., 'ctrl+k')
         closeOnSelect: '<?',    // boolean
         showMs: '<?',           // boolean
@@ -742,6 +744,7 @@
       var config = {
         placeholder: $ctrl.placeholder || defaults.placeholder,
         label: $ctrl.label || defaults.label,
+        hotkeyLabel: $ctrl.hotkeyLabel || defaults.hotkeyLabel,
         hotkey: $ctrl.hotkey || defaults.hotkey,
         closeOnSelect: $ctrl.closeOnSelect !== undefined ? $ctrl.closeOnSelect : defaults.closeOnSelect,
         showMs: $ctrl.showMs !== undefined ? $ctrl.showMs : defaults.showMs,
@@ -788,11 +791,11 @@
     }
 
     function getHotkey() {
-      return ($ctrl.hotkey || defaults.hotkey || 'Ctrl+K');
+      return ($ctrl.hotkeyLabel || $ctrl.hotkey || defaults.hotkey || 'Ctrl+K');
     }
 
     function onKeyDown(event) {
-      var hk = ($ctrl.hotkey || defaults.hotkey || 'ctrl+k').toLowerCase();
+      var hk = ($ctrl.hotkey || defaults.hotkey || 'ctrl+k');
       var connector = hk.replace(/\w/gm, '');
       var wantCtrl = hk.indexOf('ctrl') !== -1;
       var wantCmd = hk.indexOf('cmd') !== -1 || hk.indexOf('meta') !== -1;
@@ -802,19 +805,17 @@
       var pressedCtrl = event.ctrlKey;
       var pressedCmd = event.metaKey;
 
-      var modOk = (wantCtrl && pressedCtrl) ||
-                  (wantCmd && pressedCmd) ||
-                  (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
+      var modOk = (wantCtrl && pressedCtrl) || (wantCmd && pressedCmd) || (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
 
-      if (modOk && key && event.key.toLowerCase() === key) {
-        event.preventDefault();
-        $scope.$apply(function() {
-          if (searchixOverlay.isOpen()) {
-            $ctrl.close();
-          } else {
-            $ctrl.open();
-          }
-        });
+      if (modOk && key && (event.originalEvent || event).code.toLowerCase() === 'key' + key.toLowerCase()) {
+          event.preventDefault();
+          $scope.$apply(function() {
+              if (searchixOverlay.isOpen()) {
+                  $ctrl.close();
+              } else {
+                  $ctrl.open();
+              }
+          });
       }
     }
   }
