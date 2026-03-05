@@ -13,6 +13,7 @@
         recentItems: '<?',       // SearchItem[]
         placeholder: '@?',       // string
         label: '@?',             // string (e.g., 'Search')
+        hotkeyLabel: '<?',      // string (for dynamic hotkey label)
         hotkey: '@?',           // string (e.g., 'ctrl+k')
         closeOnSelect: '<?',    // boolean
         showMs: '<?',           // boolean
@@ -63,6 +64,7 @@
       var config = {
         placeholder: $ctrl.placeholder || defaults.placeholder,
         label: $ctrl.label || defaults.label,
+        hotkeyLabel: $ctrl.hotkeyLabel || defaults.hotkeyLabel,
         hotkey: $ctrl.hotkey || defaults.hotkey,
         closeOnSelect: $ctrl.closeOnSelect !== undefined ? $ctrl.closeOnSelect : defaults.closeOnSelect,
         showMs: $ctrl.showMs !== undefined ? $ctrl.showMs : defaults.showMs,
@@ -123,19 +125,17 @@
       var pressedCtrl = event.ctrlKey;
       var pressedCmd = event.metaKey;
 
-      var modOk = (wantCtrl && pressedCtrl) ||
-                  (wantCmd && pressedCmd) ||
-                  (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
+      var modOk = (wantCtrl && pressedCtrl) || (wantCmd && pressedCmd) || (!wantCtrl && !wantCmd && (pressedCtrl || pressedCmd));
 
-      if (modOk && key && event.code.toLowerCase() === 'key' + key.toLowerCase()) {
-        event.preventDefault();
-        $scope.$apply(function() {
-          if (searchixOverlay.isOpen()) {
-            $ctrl.close();
-          } else {
-            $ctrl.open();
-          }
-        });
+      if (modOk && key && (event.originalEvent || event).code.toLowerCase() === 'key' + key.toLowerCase()) {
+          event.preventDefault();
+          $scope.$apply(function() {
+              if (searchixOverlay.isOpen()) {
+                  $ctrl.close();
+              } else {
+                  $ctrl.open();
+              }
+          });
       }
     }
   }

@@ -179,9 +179,9 @@
     <div class="search-wrapper">
       <ngx-searchix
         items="$ctrl.items"
+        hotkey-label="$ctrl.hotkeyLabel"
         recent-items="$ctrl.recentItems"
         placeholder="Search documentation..."
-        hotkey="ctrl+k"
         show-ms="true"
         on-item-selected="$ctrl.handleSelect($item)"
         on-opened="$ctrl.handleOpened()"
@@ -235,6 +235,7 @@
         // Optional: Configure global defaults
         searchixConfigProvider.setDefaults({
           placeholder: 'Search...',
+          hotkey: 'k',
           closeOnSelect: true,
           maxResults: 50,
           showMs: false
@@ -339,6 +340,7 @@
         }
       ];
 
+      vm.hotkeyLabel = (/Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘' : 'Ctrl') + ' K';
       vm.selectedItem = null;
 
       // Event handlers
